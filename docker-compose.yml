@@ -16,3 +16,12 @@ services:
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - rede-interna
+
+networks:
+  rede-externa:
+    driver: bridge
+  rede-interna:
+    driver: bridge
+    
+volumes:
+  db_data:
