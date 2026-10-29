@@ -1,0 +1,9 @@
+# Dependências
+node_modules/
+
+# Arquivos gerados
+dist/
+coverage/
+
+# Logs
+*.log

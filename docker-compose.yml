@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # 1. Banco de Dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senhadificelima
+      MYSQL_DATABASE: booknest_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rede-interna
