@@ -52,5 +52,5 @@ export function passwordStrength(password: string): PasswordStrength {
 
 export function isStrongPassword(password: string): boolean {
   const { checks } = passwordStrength(password);
-  return checks.minLength && checks.upper && checks.lower && checks.number;
+  return checks.minLength && checks.upper && checks.lower && checks.number && checks.special;
 }

@@ -29,8 +29,9 @@ describe('isValidEmail', () => {
 });
 
 describe('isStrongPassword', () => {
-  it('exige 8+ chars, maiúscula, minúscula e número', () => {
-    expect(isStrongPassword('Abcdef12')).toBe(true);
+  it('exige 8+ chars, maiúscula, minúscula, número e especial', () => {
+    expect(isStrongPassword('Abcdef1!')).toBe(true);
+    expect(isStrongPassword('Abcdef12')).toBe(false);
     expect(isStrongPassword('abcdef12')).toBe(false);
     expect(isStrongPassword('Ab1')).toBe(false);
   });

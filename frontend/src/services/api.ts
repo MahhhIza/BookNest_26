@@ -64,7 +64,8 @@ export async function registerUser(payload: RegisterPayload) {
     await wait(600)
     return { id: 1 }
   }
-  return request<{ id: number }>("/usuarios", { method: "POST", body: JSON.stringify(payload) })
+  const body = { name: payload.nome, email: payload.email, password: payload.senha, cpf: payload.cpf }
+  return request<{ id: number }>("/users", { method: "POST", body: JSON.stringify(body) })
 }
 
 export async function loginUser(payload: LoginPayload) {
