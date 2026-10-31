@@ -2,6 +2,7 @@
 import bcrypt from 'bcryptjs';
 import { User } from '../entities/User';
 import { UserRepository } from '../repositories/UserRepository';
+import { UserValidator } from '../validators/userValidator';
 
 // Define os dados recebidos no cadastro.
 interface CreateUserDTO {
@@ -32,24 +33,29 @@ export class UserService {
     const email = data.email.trim().toLowerCase();
     const cpf = data.cpf.replace(/\D/g, '');
 
-    // Verifica se já existe um usuário com esse e-mail.
+    // Executa as validações dos dados.
+    UserValidator.validateEmail(email);
+    UserValidator.validateCPF(cpf);
+    UserValidator.validatePassword(data.password);
+
+    // Verifica se o e-mail já está cadastrado.
     const existingEmail = await this.userRepository.findByEmail(email);
 
     if (existingEmail) {
       throw new Error('Este e-mail já está cadastrado.');
     }
 
-    // Verifica se já existe um usuário com esse CPF.
+    // Verifica se o CPF já está cadastrado.
     const existingCpf = await this.userRepository.findByCpf(cpf);
 
     if (existingCpf) {
       throw new Error('Este CPF já está cadastrado.');
     }
 
-    // Criptografa a senha antes de armazená-la.
+    // Gera o hash da senha.
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    // Cria a entidade do usuário com a senha protegida.
+    // Cria a entidade do usuário.
     const user = new User(
       name,
       email,
@@ -57,7 +63,7 @@ export class UserService {
       cpf
     );
 
-    // Solicita ao repositório que salve o usuário.
+    // Salva o usuário no banco de dados.
     return await this.userRepository.create(user);
   }
 }
