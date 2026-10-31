@@ -25,11 +25,29 @@ export class UserController {
           error.message === 'Este e-mail já está cadastrado.' ||
           error.message === 'Este CPF já está cadastrado.';
 
-        return res.status(isDuplicate ? 409 : 400).json({
-          status: 'error',
-          message: error.message
-        });
+        const isValidationError =
+          error.message === 'Todos os campos são obrigatórios.' ||
+          error.message === 'Informe um e-mail válido.' ||
+          error.message === 'O CPF deve conter 11 dígitos.' ||
+          error.message === 'Informe um CPF válido.' ||
+          error.message.startsWith('A senha deve ter');
+
+        if (isDuplicate) {
+          return res.status(409).json({
+            status: 'error',
+            message: error.message
+          });
+        }
+
+        if (isValidationError) {
+          return res.status(400).json({
+            status: 'error',
+            message: error.message
+          });
+        }
       }
+
+      console.error('Erro interno ao cadastrar usuário:', error);
 
       return res.status(500).json({
         status: 'error',
