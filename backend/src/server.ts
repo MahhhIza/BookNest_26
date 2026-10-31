@@ -3,6 +3,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import database from './config/database';
+import userRoutes from './modules/users/routes/UserRoutes';
 
 // Carrega as variáveis de ambiente da raiz do projeto.
 dotenv.config({
@@ -14,6 +15,9 @@ const PORT = Number(process.env.PORT) || 3001;
 
 // Permite receber e interpretar requisições JSON.
 app.use(express.json());
+
+// Configura as rotas da API.
+app.use('/api', userRoutes);
 
 // Verifica se a API está funcionando.
 app.get('/health', (_req, res) => {
