@@ -5,6 +5,7 @@ import UserMenu from "@/components/UserMenu"
 const LINKS = [
   { to: "/", label: "Início", end: true },
   { to: "/categorias", label: "Categorias", end: false },
+  { to: "/estatisticas", label: "Estatísticas", end: false },
 ]
 
 export default function AppLayout() {

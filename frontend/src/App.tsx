@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom"
 import AppLayout from "@/layouts/AppLayout"
 import CategoriaForm from "@/pages/CategoriaForm"
 import Categorias from "@/pages/Categorias"
+import Estatisticas from "@/pages/Estatisticas"
 import Home from "@/pages/Home"
 import Login from "@/pages/Login"
 import Profile from "@/pages/Profile"
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/categorias/nova" element={<CategoriaForm />} />
           <Route path="/categorias/:id/editar" element={<CategoriaForm />} />
+          <Route path="/estatisticas" element={<Estatisticas />} />
         </Route>
       </Route>
 
