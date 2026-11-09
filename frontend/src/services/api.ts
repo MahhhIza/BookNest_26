@@ -1,8 +1,9 @@
-import { getToken, USER_KEY } from "@/services/session"
+import { clearSession, getToken, USER_KEY } from "@/services/session"
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "/api"
-export const isMock = () => import.meta.env.VITE_MOCK === "true"
+export const isMock = () => import.meta.env.DEV && import.meta.env.VITE_MOCK === "true"
 const MOCK_PROFILE_KEY = "booknest.mock.perfil"
+const ADMIN_DEMONSTRACAO = "admin@booknest.com"
 
 export type RegisterPayload = {
   nome: string
@@ -13,11 +14,16 @@ export type RegisterPayload = {
 
 export type LoginPayload = { email: string; senha: string }
 
-export type Usuario = { id: number; nome: string; email: string }
+export type Papel = "admin" | "usuario"
+export type Usuario = { id: number; nome: string; email: string; papel: Papel }
 export type LoginResponse = { token: string; usuario: Usuario }
 
 export type Perfil = Usuario & { cpf: string }
 export type UpdateProfilePayload = { nome: string; cpf: string; senha?: string }
+
+type UsuarioApi = { id: number; name: string; email: string; cpf?: string; role?: "admin" | "user" }
+
+const paraUsuario = (u: UsuarioApi): Usuario => ({ id: u.id, nome: u.name, email: u.email, papel: u.role === "admin" ? "admin" : "usuario" })
 
 export class ApiError extends Error {
   status: number
@@ -49,6 +55,10 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
   }
 
   const body = await res.json().catch(() => null)
+  if (res.status === 401 && token) {
+    clearSession()
+    window.location.assign("/login")
+  }
   if (!res.ok) {
     throw new ApiError(
       body?.message ?? body?.error ?? `Erro inesperado (${res.status}).`,
@@ -72,9 +82,11 @@ export async function loginUser(payload: LoginPayload) {
   if (isMock()) {
     await wait(600)
     const nome = payload.email.split("@")[0].replace(/[._-]+/g, " ")
-    return { token: "token-demonstracao", usuario: { id: 1, nome: nome.replace(/\b\w/g, (c) => c.toUpperCase()), email: payload.email } } satisfies LoginResponse
+    const papel: Papel = payload.email.trim().toLowerCase() === ADMIN_DEMONSTRACAO ? "admin" : "usuario"
+    return { token: "token-demonstracao", usuario: { id: 1, nome: nome.replace(/\b\w/g, (c) => c.toUpperCase()), email: payload.email, papel } } satisfies LoginResponse
   }
-  return request<LoginResponse>("/login", { method: "POST", body: JSON.stringify(payload) })
+  const res = await request<{ token: string; user: UsuarioApi }>("/login", { method: "POST", body: JSON.stringify({ email: payload.email, password: payload.senha }) })
+  return { token: res.token, usuario: paraUsuario(res.user) } satisfies LoginResponse
 }
 
 function mockProfile(): Perfil {
@@ -89,7 +101,8 @@ export async function getProfile() {
     await wait(300)
     return mockProfile()
   }
-  return request<Perfil>("/usuarios/me")
+  const res = await request<{ user: UsuarioApi }>("/users/me")
+  return { ...paraUsuario(res.user), cpf: res.user.cpf ?? "" } satisfies Perfil
 }
 
 export async function updateProfile(payload: UpdateProfilePayload) {
@@ -99,5 +112,7 @@ export async function updateProfile(payload: UpdateProfilePayload) {
     localStorage.setItem(MOCK_PROFILE_KEY, JSON.stringify(novo))
     return novo
   }
-  return request<Perfil>("/usuarios/me", { method: "PUT", body: JSON.stringify(payload) })
+  const body = { name: payload.nome, cpf: payload.cpf, ...(payload.senha ? { password: payload.senha } : {}) }
+  const res = await request<{ user: UsuarioApi }>("/users/me", { method: "PUT", body: JSON.stringify(body) })
+  return { ...paraUsuario(res.user), cpf: res.user.cpf ?? payload.cpf } satisfies Perfil
 }

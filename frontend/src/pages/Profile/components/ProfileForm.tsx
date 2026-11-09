@@ -73,7 +73,7 @@ export default function ProfileForm() {
         cpf: onlyDigits(form.cpf),
         ...(form.senha ? { senha: form.senha } : {}),
       })
-      atualizarUsuario({ id: atualizado.id, nome: atualizado.nome, email: atualizado.email })
+      atualizarUsuario({ id: atualizado.id, nome: atualizado.nome, email: atualizado.email, papel: atualizado.papel })
       setForm((prev) => ({ ...prev, senha: "", confirmarSenha: "" }))
       setSuccess(true)
     } catch (err) {
