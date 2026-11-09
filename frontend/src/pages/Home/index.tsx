@@ -1,35 +1,70 @@
-import { BookPlus, Library } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { BookPlus } from "lucide-react"
+import { useMemo } from "react"
+import { Link } from "react-router-dom"
+import ResumoBiblioteca from "@/components/ResumoBiblioteca"
+import { buttonVariants } from "@/components/ui/button"
+import { useAllRecords } from "@/hooks/useAllRecords"
 import { useAuth } from "@/hooks/useAuth"
 import { usePageTitle } from "@/hooks/usePageTitle"
+import { autorService } from "@/services/autorService"
+import { leituraService } from "@/services/leituraService"
+import { livroService } from "@/services/livroService"
+import type { StatusLeitura } from "@/types/leitura"
+import { calcularResumo } from "@/utils/estatisticas"
+import CapasLeituras from "./components/CapasLeituras"
+import Estante from "./components/Estante"
 
 export default function Home() {
-  const { usuario } = useAuth()
+  const { usuario, isAdmin } = useAuth()
   usePageTitle("Minha biblioteca")
   const primeiroNome = usuario?.nome.split(" ")[0]
+  const { records: livros, byId: livrosPorId, loading } = useAllRecords(livroService)
+  const { records: leituras } = useAllRecords(leituraService)
+  const { byId: autoresPorId } = useAllRecords(autorService)
+
+  const resumo = useMemo(() => calcularResumo(livros, leituras), [livros, leituras])
+  const lidos = useMemo(() => new Set(leituras.filter((l) => l.status === "Lido").map((l) => l.livroId)), [leituras])
+
+  const itens = (status: StatusLeitura) =>
+    leituras.flatMap((l) => {
+      const livro = livrosPorId.get(l.livroId)
+      return l.status === status && livro ? [{ id: l.id, livro, autor: autoresPorId.get(livro.autorId)?.nome ?? "" }] : []
+    })
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="font-heading text-3xl font-medium">Olá, {primeiroNome}</h1>
-        <p className="mt-1 text-muted-foreground">Que bom ter você de volta à sua biblioteca.</p>
+    <div className="space-y-10">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Olá, {primeiroNome}</h1>
+          <p className="mt-1 text-muted-foreground">Veja como está a sua biblioteca hoje.</p>
+        </div>
+        <ResumoBiblioteca resumo={resumo} />
       </div>
 
-      <Card>
-        <CardContent className="flex flex-col items-center gap-4 py-14 text-center">
-          <span className="grid size-14 place-items-center rounded-full bg-secondary text-primary">
-            <Library className="size-7" />
-          </span>
-          <div>
-            <h2 className="font-heading text-xl font-medium">Sua estante ainda está vazia</h2>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">Quando você cadastrar seus livros, eles vão aparecer aqui.</p>
+      <CapasLeituras titulo="Lendo agora" vazio="Você não está lendo nada no momento." editavel={isAdmin} itens={itens("Lendo")} />
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Sua estante</h2>
+        {loading ? (
+          <p className="py-10 text-center text-sm text-muted-foreground">Arrumando a estante…</p>
+        ) : livros.length === 0 ? (
+          <div className="flex flex-col items-start gap-4 rounded-xl border border-dashed p-8">
+            <p className="text-muted-foreground">Nenhum livro por aqui ainda.</p>
+            {isAdmin && (
+              <Link to="/livros/novo" className={buttonVariants({ size: "lg" })}>
+                <BookPlus /> Cadastrar livro
+              </Link>
+            )}
           </div>
-          <Button disabled>
-            <BookPlus /> Adicionar livro
-          </Button>
-        </CardContent>
-      </Card>
+        ) : (
+          <>
+            <Estante livros={livros} lidos={lidos} editavel={isAdmin} />
+            <p className="text-sm text-muted-foreground">Cada lombada é um livro. Quanto mais alta, mais páginas, e as mais apagadas são as que você ainda não leu.</p>
+          </>
+        )}
+      </section>
+
+      <CapasLeituras titulo="Na fila" vazio="Sua fila de leitura está vazia." editavel={isAdmin} itens={itens("Quero ler")} />
     </div>
   )
 }
