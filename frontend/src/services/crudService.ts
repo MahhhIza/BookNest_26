@@ -16,6 +16,12 @@ export class CrudService<T extends { id: number }, TInput = Omit<T, "id">> {
     return request<Paginated<T>>(`${this.basePath}?page=${page}&limit=${limit}`)
   }
 
+  async all() {
+    if (this.mock) return this.mock.all()
+    const result = await request<Paginated<T>>(`${this.basePath}?page=1&limit=100`)
+    return result.data
+  }
+
   get(id: number) {
     if (this.mock) return this.mock.get(id)
     return request<T>(`${this.basePath}/${id}`)
