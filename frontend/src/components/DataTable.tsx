@@ -1,7 +1,9 @@
 import type { ReactNode } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-export type Column<T> = { header: string; cell: (row: T) => ReactNode; className?: string }
+export type Column<T> = { header: string; cell: (row: T) => ReactNode; className?: string; hideOnMobile?: boolean }
+
+const classeDaColuna = (c: { className?: string; hideOnMobile?: boolean }) => `${c.className ?? ""} ${c.hideOnMobile ? "hidden md:table-cell" : ""}`.trim()
 
 type Props<T> = {
   columns: Column<T>[]
@@ -16,7 +18,7 @@ export default function DataTable<T>({ columns, rows, getKey, emptyMessage = "Ne
       <TableHeader>
         <TableRow>
           {columns.map((c) => (
-            <TableHead key={c.header} className={c.className}>
+            <TableHead key={c.header} className={classeDaColuna(c)}>
               {c.header}
             </TableHead>
           ))}
@@ -33,7 +35,7 @@ export default function DataTable<T>({ columns, rows, getKey, emptyMessage = "Ne
           rows.map((row) => (
             <TableRow key={getKey(row)}>
               {columns.map((c) => (
-                <TableCell key={c.header} className={c.className}>
+                <TableCell key={c.header} className={`whitespace-normal md:whitespace-nowrap ${classeDaColuna(c)}`}>
                   {c.cell(row)}
                 </TableCell>
               ))}
