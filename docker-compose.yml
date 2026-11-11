@@ -21,8 +21,35 @@ services:
     networks:
       - rede-interna
 
+  # 2. Backend Node.js
+  backend:
+    build: ./backend
+    container_name: backend_node
+    restart: always
+
+    ports:
+      - "3001:3001"
+    
+    environment:
+      PORT: 3001
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+    depends_on:
+      - db
+
+    networks:
+      - rede-interna
+      - rede-externa
+
 networks:
   rede-interna:
+    driver: bridge
+  rede-externa:
     driver: bridge
 
 volumes:
