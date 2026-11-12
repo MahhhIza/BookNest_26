@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 import AppLayout from "@/layouts/AppLayout"
 import AutorForm from "@/pages/AutorForm"
 import Autores from "@/pages/Autores"
@@ -11,6 +11,7 @@ import Leituras from "@/pages/Leituras"
 import LivroForm from "@/pages/LivroForm"
 import Livros from "@/pages/Livros"
 import Login from "@/pages/Login"
+import NotFound from "@/pages/NotFound"
 import Profile from "@/pages/Profile"
 import Register from "@/pages/Register"
 import AdminRoute from "@/routes/AdminRoute"
@@ -47,7 +48,7 @@ export default function App() {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
