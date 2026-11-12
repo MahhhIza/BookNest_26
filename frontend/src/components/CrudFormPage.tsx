@@ -1,14 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import FormAlert from "@/components/FormAlert"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { usePageTitle } from "@/hooks/usePageTitle"
 import { ApiError } from "@/services/api"
-import type { CrudService } from "@/services/crudService"
+import type { ICrudService } from "@/types/crud"
 import type { CrudFormProps } from "@/types/form"
 
 type Props<T extends { id: number }, TInput> = {
-  service: CrudService<T, TInput>
+  service: ICrudService<T, TInput>
   listPath: string
   entityName: string
   feminino?: boolean
@@ -63,18 +62,18 @@ export default function CrudFormPage<T extends { id: number }, TInput>({ service
   }
 
   return (
-    <Card className="mx-auto max-w-xl">
-      <CardHeader>
-        <CardTitle className="font-heading text-2xl">{titulo}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <section className="cartao cartao-estreito">
+      <div className="cartao-cabecalho">
+        <h1 className="cartao-titulo">{titulo}</h1>
+      </div>
+      <div className="cartao-corpo">
         {erro && <FormAlert>{erro}</FormAlert>}
         {carregando ? (
-          <p className="text-sm text-muted-foreground">Carregando…</p>
+          <p className="aviso">Carregando…</p>
         ) : editando && !inicial ? null : (
           children({ initial: inicial, saving, fieldErrors, submitLabel: editando ? "Salvar alterações" : "Cadastrar", onSubmit: salvar })
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   )
 }

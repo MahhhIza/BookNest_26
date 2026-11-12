@@ -1,16 +1,29 @@
-import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts"
 import type { PaginasPorNota } from "@/types/estatisticas"
 
+const NOTAS = [1, 2, 3, 4, 5]
+
 export default function DispersaoNota({ dados }: { dados: PaginasPorNota[] }) {
+  const maxPaginas = Math.max(100, Math.ceil(Math.max(0, ...dados.map((d) => d.paginas)) / 100) * 100)
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <ScatterChart>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" dataKey="paginas" name="Páginas" tickLine={false} fontSize={12} />
-        <YAxis type="number" dataKey="nota" name="Nota" domain={[0, 5]} ticks={[1, 2, 3, 4, 5]} tickLine={false} fontSize={12} />
-        <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-        <Scatter data={dados} fill="var(--primary)" />
-      </ScatterChart>
-    </ResponsiveContainer>
+    <div className="dispersao">
+      <div className="dispersao-area">
+        {NOTAS.map((nota) => (
+          <div key={nota}>
+            <div className="dispersao-linha" style={{ bottom: `${(nota / 5) * 100}%` }} />
+            <span className="dispersao-nota" style={{ bottom: `${(nota / 5) * 100}%` }}>
+              {nota}
+            </span>
+          </div>
+        ))}
+        {dados.map((d, i) => (
+          <span key={i} className="ponto" title={`${d.paginas} páginas, nota ${d.nota}`} style={{ left: `${(d.paginas / maxPaginas) * 100}%`, bottom: `${(d.nota / 5) * 100}%` }} />
+        ))}
+      </div>
+      <div className="dispersao-eixo">
+        <span>0</span>
+        <span>{maxPaginas / 2} páginas</span>
+        <span>{maxPaginas}</span>
+      </div>
+    </div>
   )
 }

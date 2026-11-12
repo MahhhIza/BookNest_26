@@ -31,7 +31,7 @@ export default function CategoriaForm({ initial = { nome: "", descricao: "" }, s
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="formulario">
       <FormField label="Nome" name="nome" value={values.nome} onChange={set("nome")} error={errors.nome ?? fieldErrors.nome} />
       <FormField label="Descrição (opcional)" name="descricao" value={values.descricao} onChange={set("descricao")} error={errors.descricao ?? fieldErrors.descricao} />
       <FormActions cancelTo="/categorias" saving={saving} submitLabel={submitLabel} />

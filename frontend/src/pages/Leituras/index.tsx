@@ -21,10 +21,10 @@ export default function Leituras() {
       service={leituraService}
       itemLabel={(l) => livros.get(l.livroId)?.titulo ?? "leitura"}
       columns={[
-        { header: "Livro", cell: (l) => <span className="font-medium">{livros.get(l.livroId)?.titulo ?? "—"}</span> },
+        { header: "Livro", cell: (l) => <span className="destaque">{livros.get(l.livroId)?.titulo ?? "—"}</span> },
         { header: "Status", cell: (l) => l.status },
         { header: "Nota", cell: (l) => (l.nota === null ? "—" : `${l.nota} de 5`), hideOnMobile: true },
-        { header: "Terminou em", cell: (l) => <span className="text-muted-foreground">{formatarData(l.concluidaEm)}</span>, hideOnMobile: true },
+        { header: "Terminou em", cell: (l) => <span className="texto-mudo">{formatarData(l.concluidaEm)}</span>, hideOnMobile: true },
       ]}
     />
   )

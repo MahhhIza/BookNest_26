@@ -51,11 +51,11 @@ export default function LeituraForm({ initial, saving, fieldErrors = {}, submitL
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="formulario">
       <SelectField label="Livro" name="livroId" placeholder="Escolha o livro" value={values.livroId} onChange={set("livroId")} options={livros.map((l) => ({ value: l.id, label: l.titulo }))} error={errors.livroId ?? fieldErrors.livroId} />
       <SelectField label="Status" name="status" value={values.status} onChange={set("status")} options={STATUS_LEITURA.map((s) => ({ value: s, label: s }))} error={errors.status ?? fieldErrors.status} />
       {values.status === "Lido" && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="formulario-duas">
           <FormField label="Nota (1 a 5)" name="nota" type="number" min={1} max={5} value={values.nota} onChange={set("nota")} error={errors.nota ?? fieldErrors.nota} />
           <FormField label="Terminou em" name="concluidaEm" type="date" max={hoje()} value={values.concluidaEm} onChange={set("concluidaEm")} error={errors.concluidaEm ?? fieldErrors.concluidaEm} />
         </div>

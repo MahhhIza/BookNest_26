@@ -1,16 +1,17 @@
-import { LayoutGrid, List, Pencil, Plus, Trash2 } from "lucide-react"
 import { useState, type ReactNode } from "react"
 import { Link } from "react-router-dom"
+import Botao from "@/components/Botao"
 import ConfirmDialog from "@/components/ConfirmDialog"
 import DataTable, { type Column } from "@/components/DataTable"
 import FormAlert from "@/components/FormAlert"
+import Icone from "@/components/Icone"
 import PageHeader from "@/components/PageHeader"
 import Pagination from "@/components/Pagination"
-import { Button, buttonVariants } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { usePaginatedList } from "@/hooks/usePaginatedList"
 import { ApiError } from "@/services/api"
-import type { CrudService } from "@/services/crudService"
+import type { ICrudService } from "@/types/crud"
+import { classeBotao } from "@/utils/botao"
 
 type Props<T extends { id: number }, TInput> = {
   title: string
@@ -20,7 +21,7 @@ type Props<T extends { id: number }, TInput> = {
   newPath: string
   newLabel: string
   emptyMessage: string
-  service: CrudService<T, TInput>
+  service: ICrudService<T, TInput>
   columns: Column<T>[]
   itemLabel: (row: T) => string
   galeria?: (rows: T[]) => ReactNode
@@ -53,15 +54,15 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
 
   const colunaAcoes: Column<T> = {
     header: "Ações",
-    className: "text-right md:w-40",
+    className: "col-direita col-acoes",
     cell: (row) => (
-      <div className="flex justify-end gap-2">
-        <Link to={`${basePath}/${row.id}/editar`} aria-label={`Editar ${itemLabel(row)}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-          <Pencil /> <span className="hidden sm:inline">Editar</span>
+      <div className="acoes-linha">
+        <Link to={`${basePath}/${row.id}/editar`} aria-label={`Editar ${itemLabel(row)}`} className={classeBotao("contorno", "pequeno")}>
+          <Icone nome="lapis" /> <span className="esconde-celular">Editar</span>
         </Link>
-        <Button variant="destructive" size="sm" onClick={() => setAlvo(row)} aria-label={`Excluir ${itemLabel(row)}`}>
-          <Trash2 />
-        </Button>
+        <Botao variante="perigo" tamanho="pequeno" onClick={() => setAlvo(row)} aria-label={`Excluir ${itemLabel(row)}`}>
+          <Icone nome="lixeira" />
+        </Botao>
       </div>
     ),
   }
@@ -69,46 +70,46 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
   const colunas = isAdmin ? [...columns, colunaAcoes] : columns
 
   return (
-    <div className="space-y-6">
+    <div className="pagina">
       <PageHeader
         title={title}
         description={description}
         action={
           isAdmin && (
-            <Link to={newPath} className={buttonVariants({ size: "lg" })}>
-              <Plus /> {newLabel}
+            <Link to={newPath} className={classeBotao("principal", "grande")}>
+              <Icone nome="mais" /> {newLabel}
             </Link>
           )
         }
       />
 
-      {!isAdmin && <p className="text-sm text-muted-foreground">Você está só consultando. Para cadastrar, editar ou excluir, entre como administrador.</p>}
+      {!isAdmin && <p className="aviso">Você está só consultando. Para cadastrar, editar ou excluir, entre como administrador.</p>}
 
       {galeria && (
-        <div className="flex gap-1" role="group" aria-label="Forma de exibir">
-          <Button variant={modo === "capas" ? "secondary" : "ghost"} size="sm" onClick={() => setModo("capas")} aria-pressed={modo === "capas"}>
-            <LayoutGrid /> Capas
-          </Button>
-          <Button variant={modo === "lista" ? "secondary" : "ghost"} size="sm" onClick={() => setModo("lista")} aria-pressed={modo === "lista"}>
-            <List /> Lista
-          </Button>
+        <div className="alternador" role="group" aria-label="Forma de exibir">
+          <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModo("capas")} aria-pressed={modo === "capas"}>
+            <Icone nome="capas" /> Capas
+          </Botao>
+          <Botao variante="fantasma" tamanho="pequeno" onClick={() => setModo("lista")} aria-pressed={modo === "lista"}>
+            <Icone nome="lista" /> Lista
+          </Botao>
         </div>
       )}
 
       {(error || erroExclusao) && <FormAlert>{error || erroExclusao}</FormAlert>}
 
       {loading ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">Carregando…</p>
+        <p className="carregando">Carregando…</p>
       ) : (
-        <div className="space-y-4">
+        <div className="lista-blocos">
           {galeria && modo === "capas" ? (
             rows.length === 0 ? (
-              <p className="py-10 text-center text-muted-foreground">{emptyMessage}</p>
+              <p className="lista-vazia">{emptyMessage}</p>
             ) : (
               galeria(rows)
             )
           ) : (
-            <div className="rounded-xl border bg-card p-2">
+            <div className="tabela-caixa">
               <DataTable columns={colunas} rows={rows} getKey={(r) => r.id} emptyMessage={emptyMessage} />
             </div>
           )}

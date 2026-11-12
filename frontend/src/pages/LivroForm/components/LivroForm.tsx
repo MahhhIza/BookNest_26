@@ -55,11 +55,11 @@ export default function LivroForm({ initial, saving, fieldErrors = {}, submitLab
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="formulario">
       <FormField label="Título" name="titulo" value={values.titulo} onChange={set("titulo")} error={errors.titulo ?? fieldErrors.titulo} />
       <SelectField label="Autor" name="autorId" placeholder="Escolha o autor" value={values.autorId} onChange={set("autorId")} options={autores.map((a) => ({ value: a.id, label: a.nome }))} error={errors.autorId ?? fieldErrors.autorId} />
       <SelectField label="Categoria" name="categoriaId" placeholder="Escolha a categoria" value={values.categoriaId} onChange={set("categoriaId")} options={categorias.map((c) => ({ value: c.id, label: c.nome }))} error={errors.categoriaId ?? fieldErrors.categoriaId} />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="formulario-duas">
         <FormField label="Páginas" name="paginas" type="number" min={1} value={values.paginas} onChange={set("paginas")} error={errors.paginas ?? fieldErrors.paginas} />
         <FormField label="Ano de publicação" name="ano" type="number" value={values.ano} onChange={set("ano")} error={errors.ano ?? fieldErrors.ano} />
       </div>

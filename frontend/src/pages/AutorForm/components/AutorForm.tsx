@@ -31,7 +31,7 @@ export default function AutorForm({ initial = { nome: "", nacionalidade: "" }, s
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="formulario">
       <FormField label="Nome" name="nome" value={values.nome} onChange={set("nome")} error={errors.nome ?? fieldErrors.nome} />
       <FormField label="Nacionalidade (opcional)" name="nacionalidade" value={values.nacionalidade} onChange={set("nacionalidade")} error={errors.nacionalidade ?? fieldErrors.nacionalidade} />
       <FormActions cancelTo="/autores" saving={saving} submitLabel={submitLabel} />

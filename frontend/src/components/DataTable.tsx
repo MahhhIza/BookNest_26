@@ -1,9 +1,8 @@
 import type { ReactNode } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export type Column<T> = { header: string; cell: (row: T) => ReactNode; className?: string; hideOnMobile?: boolean }
 
-const classeDaColuna = (c: { className?: string; hideOnMobile?: boolean }) => `${c.className ?? ""} ${c.hideOnMobile ? "hidden md:table-cell" : ""}`.trim()
+const classeDaColuna = (c: { className?: string; hideOnMobile?: boolean }) => `${c.className ?? ""} ${c.hideOnMobile ? "esconde-mobile" : ""}`.trim()
 
 type Props<T> = {
   columns: Column<T>[]
@@ -14,35 +13,35 @@ type Props<T> = {
 
 export default function DataTable<T>({ columns, rows, getKey, emptyMessage = "Nenhum registro encontrado." }: Props<T>) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
+    <table className="tabela">
+      <thead>
+        <tr>
           {columns.map((c) => (
-            <TableHead key={c.header} className={classeDaColuna(c)}>
+            <th key={c.header} className={classeDaColuna(c)}>
               {c.header}
-            </TableHead>
+            </th>
           ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+        </tr>
+      </thead>
+      <tbody>
         {rows.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={columns.length} className="py-10 text-center text-muted-foreground">
+          <tr>
+            <td colSpan={columns.length} className="col-vazia">
               {emptyMessage}
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         ) : (
           rows.map((row) => (
-            <TableRow key={getKey(row)}>
+            <tr key={getKey(row)}>
               {columns.map((c) => (
-                <TableCell key={c.header} className={`whitespace-normal md:whitespace-nowrap ${classeDaColuna(c)}`}>
+                <td key={c.header} className={classeDaColuna(c)}>
                   {c.cell(row)}
-                </TableCell>
+                </td>
               ))}
-            </TableRow>
+            </tr>
           ))
         )}
-      </TableBody>
-    </Table>
+      </tbody>
+    </table>
   )
 }

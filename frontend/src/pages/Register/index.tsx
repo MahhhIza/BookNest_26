@@ -12,7 +12,7 @@ export default function Register() {
       footer={
         <span>
           Já tem conta?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="link-destaque">
             Entrar
           </Link>
         </span>

@@ -16,8 +16,8 @@ export default function Autores() {
       service={autorService}
       itemLabel={(a) => a.nome}
       columns={[
-        { header: "Nome", cell: (a) => <span className="font-medium">{a.nome}</span> },
-        { header: "Nacionalidade", cell: (a) => <span className="text-muted-foreground">{a.nacionalidade || "—"}</span>, hideOnMobile: true },
+        { header: "Nome", cell: (a) => <span className="destaque">{a.nome}</span> },
+        { header: "Nacionalidade", cell: (a) => <span className="texto-mudo">{a.nacionalidade || "—"}</span>, hideOnMobile: true },
       ]}
     />
   )

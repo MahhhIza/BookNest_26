@@ -16,8 +16,8 @@ export default function Categorias() {
       service={categoriaService}
       itemLabel={(c) => c.nome}
       columns={[
-        { header: "Nome", cell: (c) => <span className="font-medium">{c.nome}</span> },
-        { header: "Descrição", cell: (c) => <span className="text-muted-foreground">{c.descricao || "—"}</span>, hideOnMobile: true },
+        { header: "Nome", cell: (c) => <span className="destaque">{c.nome}</span> },
+        { header: "Descrição", cell: (c) => <span className="texto-mudo">{c.descricao || "—"}</span>, hideOnMobile: true },
       ]}
     />
   )

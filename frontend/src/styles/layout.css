@@ -1,0 +1,386 @@
+.app {
+  min-height: 100svh;
+}
+
+.app-menu {
+  display: none;
+}
+
+.app-topo {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid rgb(184 151 90 / 0.6);
+  background: var(--cor-principal);
+  color: var(--cor-sobre-principal);
+}
+
+.app-topo-botao {
+  padding: 0.5rem;
+  border: 0;
+  border-radius: var(--raio);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app-topo-botao:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+
+.gaveta {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.gaveta-fundo {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(0 0 0 / 0.5);
+}
+
+.gaveta-painel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 16rem;
+}
+
+.gaveta-fechar {
+  position: absolute;
+  top: 1rem;
+  right: 0.75rem;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: var(--raio);
+  background: transparent;
+  color: var(--cor-sobre-principal);
+  cursor: pointer;
+}
+
+.app-conteudo {
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .app {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+  }
+
+  .app-menu {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 100svh;
+    border-right: 2px solid rgb(184 151 90 / 0.6);
+  }
+
+  .app-topo,
+  .gaveta {
+    display: none;
+  }
+
+  .app-conteudo {
+    padding: 2.5rem 2rem;
+  }
+}
+
+.menu-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+  padding: 1rem;
+  background: var(--cor-principal);
+  color: var(--cor-sobre-principal);
+}
+
+.menu-logo {
+  align-self: flex-start;
+}
+
+.menu-links {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--raio);
+  color: rgb(246 239 224 / 0.7);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.menu-link:hover {
+  background: rgb(255 255 255 / 0.1);
+  color: var(--cor-sobre-principal);
+}
+
+.menu-link.ativo {
+  background: rgb(255 255 255 / 0.15);
+  color: var(--cor-sobre-principal);
+}
+
+.menu-usuario {
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.usuario {
+  position: relative;
+}
+
+.usuario-botao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--cor-sobre-principal);
+  color: var(--cor-principal);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.usuario-nome {
+  display: grid;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.usuario-nome span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usuario-nome small {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.usuario-lista {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 30;
+  width: 14rem;
+  padding: 0.25rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.625rem;
+  background: var(--cor-cartao);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.15);
+  color: var(--cor-texto);
+}
+
+.usuario-info {
+  display: grid;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.usuario-info small {
+  font-size: 0.75rem;
+  color: var(--cor-mudo);
+}
+
+.usuario-info .papel {
+  margin-top: 0.25rem;
+  font-weight: 500;
+  color: var(--cor-principal);
+}
+
+.usuario-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: 0;
+  border-top: 1px solid var(--cor-borda);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.usuario-item:hover {
+  background: var(--cor-suave);
+}
+
+.auth {
+  min-height: 100svh;
+}
+
+.auth-lateral {
+  display: none;
+}
+
+.auth-direito {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 2.5rem 1rem;
+}
+
+.auth-padrao {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+}
+
+.auth-caixa {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.auth-logo-mobile {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .auth {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .auth-lateral {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 2.5rem;
+    padding: 3rem;
+    background-color: #1e311d;
+    background-position: 75% center;
+    background-size: cover;
+    color: var(--cor-sobre-principal);
+  }
+
+  .auth-logo-mobile {
+    display: none;
+  }
+}
+
+.auth-texto {
+  display: grid;
+  gap: 1rem;
+  max-width: 16rem;
+}
+
+.auth-titulo {
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.auth-texto p {
+  opacity: 0.8;
+}
+
+.auth-lateral small {
+  margin-top: auto;
+  opacity: 0.6;
+}
+
+.pagina {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.cabecalho-pagina {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.cabecalho-pagina h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.cabecalho-pagina p {
+  margin-top: 0.25rem;
+  color: var(--cor-mudo);
+}
+
+.aviso {
+  font-size: 0.875rem;
+  color: var(--cor-mudo);
+}
+
+.alternador {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.alternador .botao[aria-pressed="true"] {
+  background: var(--cor-suave);
+}
+
+.carregando {
+  padding: 2.5rem 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--cor-mudo);
+}
+
+.lista-vazia {
+  padding: 2.5rem 0;
+  text-align: center;
+  color: var(--cor-mudo);
+}
+
+.lista-blocos {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-lateral img {
+  align-self: flex-start;
+}

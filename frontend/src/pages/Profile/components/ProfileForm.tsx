@@ -1,10 +1,10 @@
-import { Loader2 } from "lucide-react"
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react"
+import Botao from "@/components/Botao"
+import Icone from "@/components/Icone"
 import FormAlert from "@/components/FormAlert"
 import FormField from "@/components/FormField"
 import PasswordField from "@/components/PasswordField"
 import PasswordStrengthMeter from "@/components/PasswordStrengthMeter"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { ApiError, getProfile, updateProfile } from "@/services/api"
 import { formatCpf, isStrongPassword, isValidCpf, onlyDigits } from "@/utils/validators"
@@ -88,25 +88,25 @@ export default function ProfileForm() {
     }
   }
 
-  if (loadingData) return <p className="text-sm text-muted-foreground">Carregando seus dados…</p>
+  if (loadingData) return <p className="aviso">Carregando seus dados…</p>
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
+    <form onSubmit={onSubmit} noValidate className="formulario">
       {success && <FormAlert variant="success">Perfil atualizado com sucesso!</FormAlert>}
       {apiError && <FormAlert>{apiError}</FormAlert>}
       <FormField label="Nome completo" name="nome" autoComplete="name" value={form.nome} onChange={set("nome")} error={errors.nome} />
       <FormField label="Email" name="email" value={email} readOnly disabled hint="O email não pode ser alterado." />
       <FormField label="CPF" name="cpf" inputMode="numeric" placeholder="000.000.000-00" value={form.cpf} onChange={set("cpf")} error={errors.cpf} />
-      <div className="space-y-4 border-t pt-4">
-        <p className="text-sm text-muted-foreground">Para trocar a senha, preencha os campos abaixo. Se não quiser trocar, deixe em branco.</p>
+      <div className="formulario-senha">
+        <p className="aviso">Para trocar a senha, preencha os campos abaixo. Se não quiser trocar, deixe em branco.</p>
         <PasswordField label="Nova senha" name="senha" autoComplete="new-password" value={form.senha} onChange={set("senha")} error={errors.senha} />
         <PasswordStrengthMeter password={form.senha} />
         <PasswordField label="Confirmar nova senha" name="confirmarSenha" autoComplete="new-password" value={form.confirmarSenha} onChange={set("confirmarSenha")} error={errors.confirmarSenha} />
       </div>
-      <Button type="submit" size="lg" className="h-10 w-full" disabled={saving}>
-        {saving && <Loader2 className="animate-spin" />}
+      <Botao type="submit" tamanho="grande" className="botao-total" disabled={saving}>
+        {saving && <Icone nome="carregando" className="girando" />}
         {saving ? "Salvando…" : "Salvar alterações"}
-      </Button>
+      </Botao>
     </form>
   )
 }

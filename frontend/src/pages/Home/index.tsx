@@ -1,8 +1,7 @@
-import { BookPlus } from "lucide-react"
 import { useMemo } from "react"
 import { Link } from "react-router-dom"
+import Icone from "@/components/Icone"
 import ResumoBiblioteca from "@/components/ResumoBiblioteca"
-import { buttonVariants } from "@/components/ui/button"
 import { useAllRecords } from "@/hooks/useAllRecords"
 import { useAuth } from "@/hooks/useAuth"
 import { usePageTitle } from "@/hooks/usePageTitle"
@@ -10,6 +9,7 @@ import { autorService } from "@/services/autorService"
 import { leituraService } from "@/services/leituraService"
 import { livroService } from "@/services/livroService"
 import type { StatusLeitura } from "@/types/leitura"
+import { classeBotao } from "@/utils/botao"
 import { calcularResumo } from "@/utils/estatisticas"
 import CapasLeituras from "./components/CapasLeituras"
 import Estante from "./components/Estante"
@@ -32,34 +32,34 @@ export default function Home() {
     })
 
   return (
-    <div className="space-y-10">
-      <div className="space-y-6">
+    <div className="home">
+      <div className="home-topo">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Olá, {primeiroNome}</h1>
-          <p className="mt-1 text-muted-foreground">Veja como está a sua biblioteca hoje.</p>
+          <h1>Olá, {primeiroNome}</h1>
+          <p>Veja como está a sua biblioteca hoje.</p>
         </div>
         <ResumoBiblioteca resumo={resumo} />
       </div>
 
       <CapasLeituras titulo="Lendo agora" vazio="Você não está lendo nada no momento." editavel={isAdmin} itens={itens("Lendo")} />
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Sua estante</h2>
+      <section className="secao">
+        <h2>Sua estante</h2>
         {loading ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">Arrumando a estante…</p>
+          <p className="carregando">Arrumando a estante…</p>
         ) : livros.length === 0 ? (
-          <div className="flex flex-col items-start gap-4 rounded-xl border border-dashed p-8">
-            <p className="text-muted-foreground">Nenhum livro por aqui ainda.</p>
+          <div className="secao-vazia">
+            <p>Nenhum livro por aqui ainda.</p>
             {isAdmin && (
-              <Link to="/livros/novo" className={buttonVariants({ size: "lg" })}>
-                <BookPlus /> Cadastrar livro
+              <Link to="/livros/novo" className={classeBotao("principal", "grande")}>
+                <Icone nome="mais" /> Cadastrar livro
               </Link>
             )}
           </div>
         ) : (
           <>
             <Estante livros={livros} lidos={lidos} editavel={isAdmin} />
-            <p className="text-sm text-muted-foreground">Cada lombada é um livro. Quanto mais alta, mais páginas, e as mais apagadas são as que você ainda não leu.</p>
+            <p className="aviso">Cada lombada é um livro. Quanto mais alta, mais páginas, e as mais apagadas são as que você ainda não leu.</p>
           </>
         )}
       </section>

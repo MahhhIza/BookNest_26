@@ -19,11 +19,11 @@ export default function Estatisticas() {
   }, [])
 
   return (
-    <div className="space-y-8">
+    <div className="estatisticas">
       <PageHeader title="Estatísticas" description="Um retrato da sua biblioteca, calculado a partir dos livros e leituras cadastrados." />
       {dados && <ResumoBiblioteca resumo={dados.resumo} />}
       {dados && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="graficos">
           <ChartCard title="Livros por categoria" description="Em quais gêneros a sua estante está concentrada">
             <BarrasCategorias dados={dados.livrosPorCategoria} />
           </ChartCard>

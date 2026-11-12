@@ -26,11 +26,11 @@ export default function Livros() {
       itemLabel={(l) => l.titulo}
       galeria={(rows) => <GaleriaLivros livros={rows} autores={autores} editavel={isAdmin} />}
       columns={[
-        { header: "Título", cell: (l) => <span className="font-medium">{l.titulo}</span> },
+        { header: "Título", cell: (l) => <span className="destaque">{l.titulo}</span> },
         { header: "Autor", cell: (l) => autores.get(l.autorId)?.nome ?? "—" },
-        { header: "Categoria", cell: (l) => <span className="text-muted-foreground">{categorias.get(l.categoriaId)?.nome ?? "—"}</span>, hideOnMobile: true },
-        { header: "Páginas", cell: (l) => l.paginas, className: "text-right", hideOnMobile: true },
-        { header: "Ano", cell: (l) => l.ano, className: "text-right", hideOnMobile: true },
+        { header: "Categoria", cell: (l) => <span className="texto-mudo">{categorias.get(l.categoriaId)?.nome ?? "—"}</span>, hideOnMobile: true },
+        { header: "Páginas", cell: (l) => l.paginas, className: "col-direita", hideOnMobile: true },
+        { header: "Ano", cell: (l) => l.ano, className: "col-direita", hideOnMobile: true },
       ]}
     />
   )
