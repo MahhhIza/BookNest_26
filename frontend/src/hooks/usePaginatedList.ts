@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { ApiError } from "@/services/api"
-import type { CrudService } from "@/services/crudService"
+import type { ICrudService } from "@/types/crud"
 import type { Paginated } from "@/types/pagination"
 
 type State<T> = { loading: boolean; error: string; result: Paginated<T> | null }
 
-export function usePaginatedList<T extends { id: number }, TInput>(service: CrudService<T, TInput>, limit = 10) {
+export function usePaginatedList<T extends { id: number }, TInput>(service: ICrudService<T, TInput>, limit = 10) {
   const [page, setPage] = useState(1)
   const [tick, setTick] = useState(0)
   const [state, setState] = useState<State<T>>({ loading: true, error: "", result: null })

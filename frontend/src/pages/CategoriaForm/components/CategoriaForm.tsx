@@ -1,19 +1,10 @@
-import { Loader2 } from "lucide-react"
 import { useState, type ChangeEvent, type FormEvent } from "react"
-import { Link } from "react-router-dom"
+import FormActions from "@/components/FormActions"
 import FormField from "@/components/FormField"
-import { Button, buttonVariants } from "@/components/ui/button"
 import type { CategoriaInput } from "@/types/categoria"
+import type { CrudFormProps } from "@/types/form"
 
 type Errors = Partial<Record<keyof CategoriaInput, string>>
-
-type Props = {
-  initial?: CategoriaInput
-  saving: boolean
-  fieldErrors?: Errors
-  submitLabel: string
-  onSubmit: (values: CategoriaInput) => void
-}
 
 function validate(v: CategoriaInput): Errors {
   const e: Errors = {}
@@ -22,7 +13,7 @@ function validate(v: CategoriaInput): Errors {
   return e
 }
 
-export default function CategoriaForm({ initial = { nome: "", descricao: "" }, saving, fieldErrors = {}, submitLabel, onSubmit }: Props) {
+export default function CategoriaForm({ initial = { nome: "", descricao: "" }, saving, fieldErrors = {}, submitLabel, onSubmit }: CrudFormProps<CategoriaInput>) {
   const [values, setValues] = useState<CategoriaInput>(initial)
   const [errors, setErrors] = useState<Errors>({})
 
@@ -40,18 +31,10 @@ export default function CategoriaForm({ initial = { nome: "", descricao: "" }, s
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="formulario">
       <FormField label="Nome" name="nome" value={values.nome} onChange={set("nome")} error={errors.nome ?? fieldErrors.nome} />
       <FormField label="Descrição (opcional)" name="descricao" value={values.descricao} onChange={set("descricao")} error={errors.descricao ?? fieldErrors.descricao} />
-      <div className="flex justify-end gap-2 pt-2">
-        <Link to="/categorias" className={buttonVariants({ variant: "outline", size: "lg" })}>
-          Cancelar
-        </Link>
-        <Button type="submit" size="lg" disabled={saving}>
-          {saving && <Loader2 className="animate-spin" />}
-          {saving ? "Salvando…" : submitLabel}
-        </Button>
-      </div>
+      <FormActions cancelTo="/categorias" saving={saving} submitLabel={submitLabel} />
     </form>
   )
 }

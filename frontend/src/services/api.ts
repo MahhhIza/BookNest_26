@@ -1,8 +1,9 @@
-import { getToken, USER_KEY } from "@/services/session"
+import axios, { type AxiosError } from "axios"
+import { clearSession, getToken, USER_KEY } from "@/services/session"
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "/api"
-export const isMock = () => import.meta.env.VITE_MOCK === "true"
+export const isMock = () => import.meta.env.DEV && import.meta.env.VITE_MOCK === "true"
 const MOCK_PROFILE_KEY = "booknest.mock.perfil"
+const ADMIN_DEMONSTRACAO = "admin@booknest.com"
 
 export type RegisterPayload = {
   nome: string
@@ -13,11 +14,24 @@ export type RegisterPayload = {
 
 export type LoginPayload = { email: string; senha: string }
 
-export type Usuario = { id: number; nome: string; email: string }
+export type Papel = "admin" | "usuario"
+export interface Usuario {
+  id: number
+  nome: string
+  email: string
+  papel: Papel
+}
 export type LoginResponse = { token: string; usuario: Usuario }
 
-export type Perfil = Usuario & { cpf: string }
+export interface Perfil extends Usuario {
+  cpf: string
+}
 export type UpdateProfilePayload = { nome: string; cpf: string; senha?: string }
+
+type UsuarioApi = { id: number; name: string; email: string; cpf?: string; role?: "admin" | "user" }
+type ErroApi = { message?: string; error?: string; errors?: Record<string, string> }
+
+const paraUsuario = (u: UsuarioApi): Usuario => ({ id: u.id, nome: u.name, email: u.email, papel: u.role === "admin" ? "admin" : "usuario" })
 
 export class ApiError extends Error {
   status: number
@@ -25,39 +39,40 @@ export class ApiError extends Error {
 
   constructor(message: string, status: number, fieldErrors: Record<string, string> = {}) {
     super(message)
+    this.name = "ApiError"
     this.status = status
     this.fieldErrors = fieldErrors
   }
 }
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? "/api",
+  timeout: 10000,
+  headers: { "Content-Type": "application/json" },
+})
 
-export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+api.interceptors.request.use((config) => {
   const token = getToken()
-  let res: Response
-  try {
-    res = await fetch(`${BASE_URL}${path}`, {
-      ...init,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...init.headers,
-      },
-    })
-  } catch {
-    throw new ApiError("Não foi possível conectar ao servidor. Tente novamente.", 0)
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-  const body = await res.json().catch(() => null)
-  if (!res.ok) {
-    throw new ApiError(
-      body?.message ?? body?.error ?? `Erro inesperado (${res.status}).`,
-      res.status,
-      body?.errors ?? {}
-    )
+api.interceptors.response.use(
+  (resposta) => resposta,
+  (erro: AxiosError<ErroApi>) => {
+    if (!erro.response) {
+      return Promise.reject(new ApiError("Não foi possível conectar ao servidor. Tente novamente.", 0))
+    }
+    const { status, data } = erro.response
+    if (status === 401 && getToken()) {
+      clearSession()
+      window.location.assign("/login")
+    }
+    return Promise.reject(new ApiError(data?.message ?? data?.error ?? `Erro inesperado (${status}).`, status, data?.errors ?? {}))
   }
-  return body as T
-}
+)
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function registerUser(payload: RegisterPayload) {
   if (isMock()) {
@@ -65,16 +80,19 @@ export async function registerUser(payload: RegisterPayload) {
     return { id: 1 }
   }
   const body = { name: payload.nome, email: payload.email, password: payload.senha, cpf: payload.cpf }
-  return request<{ id: number }>("/users", { method: "POST", body: JSON.stringify(body) })
+  const { data } = await api.post<{ id: number }>("/users", body)
+  return data
 }
 
 export async function loginUser(payload: LoginPayload) {
   if (isMock()) {
     await wait(600)
     const nome = payload.email.split("@")[0].replace(/[._-]+/g, " ")
-    return { token: "token-demonstracao", usuario: { id: 1, nome: nome.replace(/\b\w/g, (c) => c.toUpperCase()), email: payload.email } } satisfies LoginResponse
+    const papel: Papel = payload.email.trim().toLowerCase() === ADMIN_DEMONSTRACAO ? "admin" : "usuario"
+    return { token: "token-demonstracao", usuario: { id: 1, nome: nome.replace(/\b\w/g, (c) => c.toUpperCase()), email: payload.email, papel } } satisfies LoginResponse
   }
-  return request<LoginResponse>("/login", { method: "POST", body: JSON.stringify(payload) })
+  const { data } = await api.post<{ token: string; user: UsuarioApi }>("/login", { email: payload.email, password: payload.senha })
+  return { token: data.token, usuario: paraUsuario(data.user) } satisfies LoginResponse
 }
 
 function mockProfile(): Perfil {
@@ -89,7 +107,8 @@ export async function getProfile() {
     await wait(300)
     return mockProfile()
   }
-  return request<Perfil>("/usuarios/me")
+  const { data } = await api.get<{ user: UsuarioApi }>("/users/me")
+  return { ...paraUsuario(data.user), cpf: data.user.cpf ?? "" } satisfies Perfil
 }
 
 export async function updateProfile(payload: UpdateProfilePayload) {
@@ -99,5 +118,7 @@ export async function updateProfile(payload: UpdateProfilePayload) {
     localStorage.setItem(MOCK_PROFILE_KEY, JSON.stringify(novo))
     return novo
   }
-  return request<Perfil>("/usuarios/me", { method: "PUT", body: JSON.stringify(payload) })
+  const body = { name: payload.nome, cpf: payload.cpf, ...(payload.senha ? { password: payload.senha } : {}) }
+  const { data } = await api.put<{ user: UsuarioApi }>("/users/me", body)
+  return { ...paraUsuario(data.user), cpf: data.user.cpf ?? payload.cpf } satisfies Perfil
 }

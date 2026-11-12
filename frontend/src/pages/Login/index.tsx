@@ -14,7 +14,7 @@ export default function Login() {
       footer={
         <span>
           Não tem conta?{" "}
-          <Link to="/cadastro" className="font-medium text-primary hover:underline">
+          <Link to="/cadastro" className="link-destaque">
             Cadastre-se
           </Link>
         </span>

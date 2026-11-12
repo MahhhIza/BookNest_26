@@ -5,6 +5,7 @@ import { getToken, TOKEN_KEY, USER_KEY } from "@/services/session"
 export type AuthContextValue = {
   usuario: Usuario | null
   token: string | null
+  isAdmin: boolean
   login: (payload: LoginPayload) => Promise<void>
   logout: () => void
   atualizarUsuario: (usuario: Usuario) => void
@@ -45,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsuario(novo)
   }, [])
 
-  const value = useMemo(() => ({ usuario, token, login, logout, atualizarUsuario }), [usuario, token, login, logout, atualizarUsuario])
+  const isAdmin = usuario?.papel === "admin"
+  const value = useMemo(() => ({ usuario, token, isAdmin, login, logout, atualizarUsuario }), [usuario, token, isAdmin, login, logout, atualizarUsuario])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
