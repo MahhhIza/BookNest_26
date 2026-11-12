@@ -1,4 +1,4 @@
-import { CrudService } from "@/services/crudService"
+import { BaseCrudService } from "@/services/BaseCrudService"
 import type { Livro, LivroInput } from "@/types/livro"
 
 const seed: Livro[] = [
@@ -20,4 +20,13 @@ const seed: Livro[] = [
   { id: 16, titulo: "Memórias Póstumas de Brás Cubas", autorId: 1, categoriaId: 1, paginas: 368, ano: 1881 },
 ]
 
-export const livroService = new CrudService<Livro, LivroInput>("/livros", seed)
+class LivroService extends BaseCrudService<Livro, LivroInput> {
+  protected readonly caminho = "/livros"
+  protected readonly dadosIniciais = seed
+
+  protected override preparar(input: LivroInput): LivroInput {
+    return { ...input, titulo: input.titulo.trim(), capaUrl: input.capaUrl?.trim() || null }
+  }
+}
+
+export const livroService = new LivroService()

@@ -1,4 +1,4 @@
-import { CrudService } from "@/services/crudService"
+import { BaseCrudService } from "@/services/BaseCrudService"
 import type { Autor, AutorInput } from "@/types/autor"
 
 const seed: Autor[] = [
@@ -14,4 +14,13 @@ const seed: Autor[] = [
   { id: 10, nome: "Stephen King", nacionalidade: "Americano" },
 ]
 
-export const autorService = new CrudService<Autor, AutorInput>("/autores", seed)
+class AutorService extends BaseCrudService<Autor, AutorInput> {
+  protected readonly caminho = "/autores"
+  protected readonly dadosIniciais = seed
+
+  protected override preparar(input: AutorInput): AutorInput {
+    return { nome: input.nome.trim(), nacionalidade: input.nacionalidade.trim() }
+  }
+}
+
+export const autorService = new AutorService()

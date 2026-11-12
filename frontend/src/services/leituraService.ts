@@ -1,4 +1,4 @@
-import { CrudService } from "@/services/crudService"
+import { BaseCrudService } from "@/services/BaseCrudService"
 import type { Leitura, LeituraInput } from "@/types/leitura"
 
 const seed: Leitura[] = [
@@ -19,4 +19,14 @@ const seed: Leitura[] = [
   { id: 15, livroId: 14, status: "Quero ler", nota: null, concluidaEm: null },
 ]
 
-export const leituraService = new CrudService<Leitura, LeituraInput>("/leituras", seed)
+class LeituraService extends BaseCrudService<Leitura, LeituraInput> {
+  protected readonly caminho = "/leituras"
+  protected readonly dadosIniciais = seed
+
+  protected override preparar(input: LeituraInput): LeituraInput {
+    if (input.status === "Lido") return input
+    return { ...input, nota: null, concluidaEm: null }
+  }
+}
+
+export const leituraService = new LeituraService()

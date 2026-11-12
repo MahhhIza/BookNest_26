@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
-import type { CrudService } from "@/services/crudService"
+import type { ICrudService } from "@/types/crud"
 
-export function useAllRecords<T extends { id: number }, TInput>(service: CrudService<T, TInput>) {
+export function useAllRecords<T extends { id: number }, TInput>(service: ICrudService<T, TInput>) {
   const [records, setRecords] = useState<T[]>([])
   const [loading, setLoading] = useState(true)
 
