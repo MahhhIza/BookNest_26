@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import database from './config/database';
 import userRoutes from './modules/users/routes/UserRoutes';
+import authRoutes from './modules/auth/routes/AuthRoutes';
 
 // Carrega as variáveis de ambiente da raiz do projeto.
 dotenv.config({
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Configura as rotas da API.
 app.use('/api', userRoutes);
+app.use('/api', authRoutes);  
 
 // Verifica se a API está funcionando.
 app.get('/health', (_req, res) => {
