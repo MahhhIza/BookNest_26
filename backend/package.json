@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "tsx --test src/modules/users/validators/userValidator.test.ts src/modules/auth/services/AuthService.test.ts"
+    "test": "tsx --test src/modules/users/validators/userValidator.test.ts src/modules/auth/services/AuthService.test.ts src/modules/auth/middlewares/authMiddleware.test.ts"
   },
   "keywords": [],
   "author": "",
