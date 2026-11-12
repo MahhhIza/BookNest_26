@@ -21,7 +21,11 @@ interface LoginResult {
 }
 
 export class AuthService {
-  private readonly userRepository = new UserRepository();
+  private readonly userRepository: UserRepository;
+
+  constructor(userRepository?: UserRepository) {
+    this.userRepository = userRepository ?? new UserRepository();
+  }
 
   // Responsável pelas regras de negócio da autenticação.
   async login(data: LoginDTO): Promise<LoginResult> {
