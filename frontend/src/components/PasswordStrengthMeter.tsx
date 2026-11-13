@@ -6,6 +6,7 @@ const RULES = [
   { key: "upper", text: "Letra maiúscula" },
   { key: "lower", text: "Letra minúscula" },
   { key: "number", text: "Número" },
+  { key: "special", text: "Caractere especial" },
 ] as const
 
 export default function PasswordStrengthMeter({ password }: { password: string }) {
