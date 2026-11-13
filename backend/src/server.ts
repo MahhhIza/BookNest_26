@@ -4,8 +4,13 @@ import dotenv from 'dotenv';
 import path from 'path';
 import database from './config/database';
 import userRoutes from './modules/users/routes/UserRoutes';
+import authRoutes from './modules/auth/routes/AuthRoutes';
+import categoriaRoutes from './modules/categorias/routes/CategoriaRoutes';
+import autorRoutes from './modules/autores/routes/AutorRoutes';
+import livroRoutes from './modules/livros/routes/LivroRoutes';
+import leituraRoutes from './modules/leituras/routes/LeituraRoutes';
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 
-// Carrega as variáveis de ambiente da raiz do projeto.
 dotenv.config({
   path: path.resolve(__dirname, '../../.env')
 });
@@ -13,13 +18,20 @@ dotenv.config({
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
 
-// Permite receber e interpretar requisições JSON.
+if (!process.env.JWT_SECRET) {
+  console.error('Defina a variável JWT_SECRET antes de iniciar a API.');
+  process.exit(1);
+}
+
 app.use(express.json());
 
-// Configura as rotas da API.
 app.use('/api', userRoutes);
+app.use('/api', authRoutes);
+app.use('/api/categorias', categoriaRoutes);
+app.use('/api/autores', autorRoutes);
+app.use('/api/livros', livroRoutes);
+app.use('/api/leituras', leituraRoutes);
 
-// Verifica se a API está funcionando.
 app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -27,7 +39,6 @@ app.get('/health', (_req, res) => {
   });
 });
 
-// Verifica a conexão com o MySQL.
 app.get('/health/db', async (_req, res) => {
   try {
     await database.query('SELECT 1');
@@ -61,7 +72,9 @@ app.get('/health/db', async (_req, res) => {
   }
 });
 
-// Inicializa o servidor.
+app.use(notFoundHandler);
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`BookNest API disponível na porta ${PORT}`);
 });
