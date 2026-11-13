@@ -3,8 +3,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { UserValidator } from './userValidator';
 
-// TESTES DE E-MAIL
-
 test('deve aceitar um e-mail válido', () => {
   assert.doesNotThrow(() => {
     UserValidator.validateEmail('maria@email.com');
@@ -16,8 +14,6 @@ test('deve rejeitar um e-mail sem formato válido', () => {
     UserValidator.validateEmail('mariaemail.com');
   }, /Informe um e-mail válido/);
 });
-
-// TESTES DE CPF
 
 test('deve aceitar um CPF válido', () => {
   assert.doesNotThrow(() => {
@@ -42,8 +38,6 @@ test('deve rejeitar um CPF com dígitos verificadores incorretos', () => {
     UserValidator.validateCPF('52998224724');
   }, /Informe um CPF válido/);
 });
-
-// TESTES DE SENHA
 
 test('deve aceitar uma senha forte', () => {
   assert.doesNotThrow(() => {

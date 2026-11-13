@@ -1,10 +1,11 @@
 
 import bcrypt from 'bcryptjs';
+import { getSaltRounds } from '../../../config/env';
+import { ConflictError, NotFoundError, ValidationError } from '../../../errors/AppError';
 import { User } from '../entities/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { UserValidator } from '../validators/userValidator';
 
-// Define os dados recebidos no cadastro.
 interface CreateUserDTO {
   name: string;
   email: string;
@@ -12,50 +13,47 @@ interface CreateUserDTO {
   cpf: string;
 }
 
+interface UpdateUserDTO {
+  name?: string;
+  cpf?: string;
+  password?: string;
+}
+
 export class UserService {
   private readonly userRepository = new UserRepository();
 
-  // Responsável pelas regras de negócio do cadastro.
   async createUser(data: CreateUserDTO): Promise<User> {
-
-    // Verifica se todos os campos foram preenchidos.
     if (
       !data.name?.trim() ||
       !data.email?.trim() ||
       !data.password ||
       !data.cpf?.trim()
     ) {
-      throw new Error('Todos os campos são obrigatórios.');
+      throw new ValidationError('Todos os campos são obrigatórios.');
     }
 
-    // Normaliza os dados recebidos.
     const name = data.name.trim();
     const email = data.email.trim().toLowerCase();
     const cpf = data.cpf.replace(/\D/g, '');
 
-    // Executa as validações dos dados.
     UserValidator.validateEmail(email);
     UserValidator.validateCPF(cpf);
     UserValidator.validatePassword(data.password);
 
-    // Verifica se o e-mail já está cadastrado.
     const existingEmail = await this.userRepository.findByEmail(email);
 
     if (existingEmail) {
-      throw new Error('Este e-mail já está cadastrado.');
+      throw new ConflictError('Este e-mail já está cadastrado.');
     }
 
-    // Verifica se o CPF já está cadastrado.
     const existingCpf = await this.userRepository.findByCpf(cpf);
 
     if (existingCpf) {
-      throw new Error('Este CPF já está cadastrado.');
+      throw new ConflictError('Este CPF já está cadastrado.');
     }
 
-    // Gera o hash da senha.
-    const passwordHash = await bcrypt.hash(data.password, 10);
+    const passwordHash = await bcrypt.hash(data.password, getSaltRounds());
 
-    // Cria a entidade do usuário.
     const user = new User(
       name,
       email,
@@ -63,7 +61,55 @@ export class UserService {
       cpf
     );
 
-    // Salva o usuário no banco de dados.
     return await this.userRepository.create(user);
+  }
+
+  async getById(id: number): Promise<User> {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new NotFoundError('Usuário não encontrado.');
+    }
+
+    return user;
+  }
+
+  async updateUser(id: number, data: UpdateUserDTO): Promise<User> {
+    const current = await this.getById(id);
+
+    if (!data.name?.trim() || !data.cpf?.trim()) {
+      throw new ValidationError('Todos os campos são obrigatórios.');
+    }
+
+    const name = data.name.trim();
+    const cpf = data.cpf.replace(/\D/g, '');
+
+    UserValidator.validateCPF(cpf);
+
+    const sameCpf = await this.userRepository.findByCpf(cpf);
+
+    if (sameCpf && sameCpf.getId() !== id) {
+      throw new ConflictError('Este CPF já está cadastrado.');
+    }
+
+    let passwordHash = current.getPasswordHash();
+
+    if (data.password) {
+      UserValidator.validatePassword(data.password);
+      passwordHash = await bcrypt.hash(data.password, getSaltRounds());
+    }
+
+    const updated = new User(
+      name,
+      current.getEmail(),
+      passwordHash,
+      cpf,
+      id,
+      current.getRole()
+    );
+
+    await this.userRepository.update(updated);
+
+    return updated;
   }
 }

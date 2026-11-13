@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import mysql from 'mysql2/promise';
 import path from 'path';
 
-// Carrega o .env que está na raiz do projeto.
 dotenv.config({
   path: path.resolve(__dirname, '../../../.env')
 });
@@ -15,6 +14,7 @@ const database = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.MYSQL_DATABASE || 'booknest_db',
   waitForConnections: true,
+  dateStrings: true,
   connectionLimit: 10,
   queueLimit: 0
 });

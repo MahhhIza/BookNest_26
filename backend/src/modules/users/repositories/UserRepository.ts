@@ -1,83 +1,89 @@
 
 import database from '../../../config/database';
 import { User } from '../entities/User';
+import type { UserRole } from '../entities/User';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-// Define o formato dos dados que serão retornados pelo MySQL.
 interface UserRow extends RowDataPacket {
   id: number;
   name: string;
   email: string;
   password_hash: string;
   cpf: string;
+  role: UserRole;
 }
 
 export class UserRepository {
+  private toEntity(row: UserRow): User {
+    return new User(
+      row.name,
+      row.email,
+      row.password_hash,
+      row.cpf,
+      row.id,
+      row.role
+    );
+  }
 
-  // Cadastra um usuário no banco de dados.
   async create(user: User): Promise<User> {
     const [result] = await database.execute<ResultSetHeader>(
-      `INSERT INTO users (name, email, password_hash, cpf)
-       VALUES (?, ?, ?, ?)`,
+      `INSERT INTO users (name, email, password_hash, cpf, role)
+       VALUES (?, ?, ?, ?, ?)`,
       [
         user.getName(),
         user.getEmail(),
         user.getPasswordHash(),
-        user.getCpf()
+        user.getCpf(),
+        user.getRole()
       ]
     );
 
-    // Retorna o usuário com o ID gerado pelo MySQL.
     return new User(
       user.getName(),
       user.getEmail(),
       user.getPasswordHash(),
       user.getCpf(),
-      result.insertId
+      result.insertId,
+      user.getRole()
     );
   }
 
-  // Busca um usuário pelo e-mail.
+  async update(user: User): Promise<void> {
+    await database.execute(
+      `UPDATE users SET name = ?, cpf = ?, password_hash = ? WHERE id = ?`,
+      [
+        user.getName(),
+        user.getCpf(),
+        user.getPasswordHash(),
+        user.getId()
+      ]
+    );
+  }
+
+  async findById(id: number): Promise<User | null> {
+    const [rows] = await database.execute<UserRow[]>(
+      'SELECT * FROM users WHERE id = ?',
+      [id]
+    );
+
+    return rows.length === 0 ? null : this.toEntity(rows[0]);
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const [rows] = await database.execute<UserRow[]>(
       'SELECT * FROM users WHERE email = ?',
       [email]
     );
 
-    if (rows.length === 0) {
-      return null;
-    }
-
-    const user = rows[0];
-
-    return new User(
-      user.name,
-      user.email,
-      user.password_hash,
-      user.cpf,
-      user.id
-    );
+    return rows.length === 0 ? null : this.toEntity(rows[0]);
   }
 
-  // Busca um usuário pelo CPF.
   async findByCpf(cpf: string): Promise<User | null> {
     const [rows] = await database.execute<UserRow[]>(
       'SELECT * FROM users WHERE cpf = ?',
       [cpf]
     );
 
-    if (rows.length === 0) {
-      return null;
-    }
-
-    const user = rows[0];
-
-    return new User(
-      user.name,
-      user.email,
-      user.password_hash,
-      user.cpf,
-      user.id
-    );
+    return rows.length === 0 ? null : this.toEntity(rows[0]);
   }
 }
