@@ -37,6 +37,28 @@ export class UserRepository {
     );
   }
 
+  // Busca um usuário pelo ID.
+  async findById(id: number): Promise<User | null> {
+    const [rows] = await database.execute<UserRow[]>(
+      'SELECT * FROM users WHERE id = ?',
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const user = rows[0];
+
+    return new User(
+      user.name,
+      user.email,
+      user.password_hash,
+      user.cpf,
+      user.id
+    );
+  }
+
   // Busca um usuário pelo e-mail.
   async findByEmail(email: string): Promise<User | null> {
     const [rows] = await database.execute<UserRow[]>(
@@ -79,5 +101,31 @@ export class UserRepository {
       user.cpf,
       user.id
     );
+  }
+
+  // Atualiza os dados de um usuário existente.
+  async update(user: User): Promise<User | null> {
+    const userId = user.getId();
+
+    // Impede uma atualização sem um ID válido.
+    if (userId === null) {
+      return null;
+    }
+
+    await database.execute<ResultSetHeader>(
+      `UPDATE users
+       SET name = ?, password_hash = ?, cpf = ?
+       WHERE id = ?`,
+      [
+        user.getName(),
+        user.getPasswordHash(),
+        user.getCpf(),
+        userId
+      ]
+    );
+
+    // Busca novamente o usuário para confirmar sua existência
+    // e retornar os dados atualizados do banco.
+    return await this.findById(userId);
   }
 }

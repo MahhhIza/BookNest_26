@@ -12,13 +12,18 @@ interface CreateUserDTO {
   cpf: string;
 }
 
+// Define os dados permitidos na atualização do perfil.
+interface UpdateUserDTO {
+  name: string;
+  password: string;
+  cpf: string;
+}
+
 export class UserService {
   private readonly userRepository = new UserRepository();
 
   // Responsável pelas regras de negócio do cadastro.
   async createUser(data: CreateUserDTO): Promise<User> {
-
-    // Verifica se todos os campos foram preenchidos.
     if (
       !data.name?.trim() ||
       !data.email?.trim() ||
@@ -28,42 +33,94 @@ export class UserService {
       throw new Error('Todos os campos são obrigatórios.');
     }
 
-    // Normaliza os dados recebidos.
     const name = data.name.trim();
     const email = data.email.trim().toLowerCase();
     const cpf = data.cpf.replace(/\D/g, '');
 
-    // Executa as validações dos dados.
     UserValidator.validateEmail(email);
     UserValidator.validateCPF(cpf);
     UserValidator.validatePassword(data.password);
 
-    // Verifica se o e-mail já está cadastrado.
     const existingEmail = await this.userRepository.findByEmail(email);
 
     if (existingEmail) {
       throw new Error('Este e-mail já está cadastrado.');
     }
 
-    // Verifica se o CPF já está cadastrado.
     const existingCpf = await this.userRepository.findByCpf(cpf);
 
     if (existingCpf) {
       throw new Error('Este CPF já está cadastrado.');
     }
 
-    // Gera o hash da senha.
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    // Cria a entidade do usuário.
-    const user = new User(
+    const user = new User(name, email, passwordHash, cpf);
+
+    return await this.userRepository.create(user);
+  }
+
+  // Consulta o perfil do usuário autenticado.
+  async getProfile(userId: number): Promise<User> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
+    }
+
+    return user;
+  }
+
+  // Atualiza os dados do próprio perfil.
+  async updateProfile(
+    userId: number,
+    data: UpdateUserDTO
+  ): Promise<User> {
+    if (
+      !data.name?.trim() ||
+      !data.password ||
+      !data.cpf?.trim()
+    ) {
+      throw new Error('Todos os campos são obrigatórios.');
+    }
+
+    const currentUser = await this.userRepository.findById(userId);
+
+    if (!currentUser) {
+      throw new Error('Usuário não encontrado.');
+    }
+
+    const name = data.name.trim();
+    const cpf = data.cpf.replace(/\D/g, '');
+
+    UserValidator.validateCPF(cpf);
+    UserValidator.validatePassword(data.password);
+
+    const existingCpf = await this.userRepository.findByCpf(cpf);
+
+    if (
+      existingCpf &&
+      existingCpf.getId() !== currentUser.getId()
+    ) {
+      throw new Error('Este CPF já está cadastrado.');
+    }
+
+    const passwordHash = await bcrypt.hash(data.password, 10);
+
+    const updatedUser = new User(
       name,
-      email,
+      currentUser.getEmail(),
       passwordHash,
-      cpf
+      cpf,
+      currentUser.getId()
     );
 
-    // Salva o usuário no banco de dados.
-    return await this.userRepository.create(user);
+    const result = await this.userRepository.update(updatedUser);
+
+    if (!result) {
+      throw new Error('Não foi possível atualizar o perfil.');
+    }
+
+    return result;
   }
 }
