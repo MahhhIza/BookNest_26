@@ -1,6 +1,6 @@
-import { Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useEffect, useRef } from "react"
+import Botao from "@/components/Botao"
+import Icone from "@/components/Icone"
 
 type Props = {
   open: boolean
@@ -13,23 +13,28 @@ type Props = {
 }
 
 export default function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel = "Confirmar", loading, onConfirm }: Props) {
+  const dialogo = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    const el = dialogo.current
+    if (!el) return
+    if (open && !el.open) el.showModal()
+    if (!open && el.open) el.close()
+  }, [open])
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Cancelar
-          </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={loading}>
-            {loading && <Loader2 className="animate-spin" />}
-            {confirmLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <dialog ref={dialogo} className="modal" onClose={() => onOpenChange(false)} onClick={(ev) => ev.target === dialogo.current && onOpenChange(false)}>
+      <h2>{title}</h2>
+      <p>{description}</p>
+      <div className="modal-acoes">
+        <Botao variante="contorno" onClick={() => onOpenChange(false)} disabled={loading}>
+          Cancelar
+        </Botao>
+        <Botao variante="perigo" onClick={onConfirm} disabled={loading}>
+          {loading && <Icone nome="carregando" className="girando" />}
+          {confirmLabel}
+        </Botao>
+      </div>
+    </dialog>
   )
 }

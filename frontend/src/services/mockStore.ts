@@ -34,6 +34,11 @@ export class MockStore<T extends { id: number }, TInput> {
     return { data: rows.slice(start, start + limit), page, limit, total: rows.length, totalPages: Math.ceil(rows.length / limit) }
   }
 
+  async all(): Promise<T[]> {
+    await wait(150)
+    return this.read()
+  }
+
   async get(id: number): Promise<T> {
     await wait(250)
     return this.read().find((r) => r.id === id) ?? this.notFound()

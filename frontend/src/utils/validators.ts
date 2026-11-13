@@ -50,6 +50,15 @@ export function passwordStrength(password: string): PasswordStrength {
   return { score: clamped, label: LABELS[clamped], checks };
 }
 
+export function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export function isStrongPassword(password: string): boolean {
   const { checks } = passwordStrength(password);
   return checks.minLength && checks.upper && checks.lower && checks.number && checks.special;

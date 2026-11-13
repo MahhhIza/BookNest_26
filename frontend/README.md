@@ -1,21 +1,26 @@
-# React + TypeScript + Vite + shadcn/ui
+# BookNest – front-end
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+React 19 + TypeScript + Vite, com React Router, Axios e CSS puro (`src/styles/`).
 
-## Adding components
-
-To add components to your app, run the following command:
+## Rodar
 
 ```bash
-npx shadcn@latest add button
+npm install
+npm run dev
 ```
 
-This will place the ui components in the `src/components` directory.
+Sem o back-end, crie `frontend/.env.local` com `VITE_MOCK=true` para usar dados de exemplo (só em desenvolvimento). Entre com `admin@booknest.com` para ver os botões de administrador.
 
-## Using components
+## Comandos
 
-To use the components in your app, import them as follows:
+- `npm run build`: confere os tipos e gera a pasta `dist/`
+- `npm test`: testes do Vitest
+- `npm run lint`: ESLint
 
-```tsx
-import { Button } from "@/components/ui/button"
-```
+## Pastas de `src/`
+
+- `pages/`: uma pasta por tela, com `components/` só daquela tela
+- `components/`: componentes reutilizáveis (lista, formulário, tabela, campos)
+- `services/`: `api.ts` (Axios com interceptor do token), `BaseCrudService.ts` (classe abstrata) e um serviço por recurso
+- `contexts/`, `hooks/`, `routes/`, `layouts/`, `types/`, `utils/`
+- `styles/`: CSS global (`base.css`, `layout.css`, `paginas.css`)

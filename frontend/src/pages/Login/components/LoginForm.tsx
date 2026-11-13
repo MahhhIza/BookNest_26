@@ -1,10 +1,10 @@
-import { Loader2 } from "lucide-react"
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
+import Botao from "@/components/Botao"
+import Icone from "@/components/Icone"
 import FormAlert from "@/components/FormAlert"
 import FormField from "@/components/FormField"
 import PasswordField from "@/components/PasswordField"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { ApiError } from "@/services/api"
 import { isValidEmail } from "@/utils/validators"
@@ -42,14 +42,14 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
+    <form onSubmit={onSubmit} noValidate className="formulario">
       {apiError && <FormAlert>{apiError}</FormAlert>}
       <FormField label="Email" name="email" type="email" autoComplete="email" placeholder="voce@email.com" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
       <PasswordField label="Senha" name="senha" autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} error={errors.senha} />
-      <Button type="submit" size="lg" className="h-10 w-full" disabled={loading}>
-        {loading && <Loader2 className="animate-spin" />}
+      <Botao type="submit" tamanho="grande" className="botao-total" disabled={loading}>
+        {loading && <Icone nome="carregando" className="girando" />}
         {loading ? "Entrando…" : "Entrar"}
-      </Button>
+      </Botao>
     </form>
   )
 }

@@ -1,0 +1,380 @@
+.home {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.home-topo {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.home-topo h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+}
+
+.home-topo p {
+  margin-top: 0.25rem;
+  color: var(--cor-mudo);
+}
+
+.secao {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.secao h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.secao-vazia {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px dashed var(--cor-campo);
+  border-radius: 0.75rem;
+  color: var(--cor-mudo);
+}
+
+.resumo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 0;
+}
+
+.resumo-item {
+  padding-left: 1rem;
+  border-left: 2px solid rgb(184 151 90 / 0.6);
+}
+
+.resumo-item dd {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.resumo-item dt {
+  font-size: 0.875rem;
+  color: var(--cor-mudo);
+}
+
+@media (min-width: 768px) {
+  .resumo {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.estante-prateleira {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  min-height: 12rem;
+  padding: 1rem 1.5rem 0;
+  overflow-x: auto;
+}
+
+.lombada {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0.25rem;
+  overflow: hidden;
+  border-radius: 0.25rem 0.25rem 0 0;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.lombada:hover,
+.lombada:focus-visible {
+  transform: translateY(-0.5rem);
+}
+
+.lombada span {
+  max-height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.estante-base {
+  height: 0.75rem;
+  border-radius: 0.25rem;
+  background: #3b2a1e;
+  box-shadow: 0 6px 10px -4px rgb(28 42 31 / 0.35);
+}
+
+.capas-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.capas-lista li {
+  width: 8rem;
+}
+
+.capa-link {
+  display: block;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.capa-link:hover,
+.capa-link:focus-visible {
+  transform: translateY(-0.25rem);
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.galeria-info {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--cor-mudo);
+}
+
+@media (min-width: 640px) {
+  .galeria {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .galeria {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.capa {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 0.125rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+}
+
+.capa-imagem {
+  display: block;
+  object-fit: cover;
+}
+
+.capa-padrao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.capa-moldura {
+  position: absolute;
+  inset: 0.375rem;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.capa-titulo {
+  position: relative;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.capa-autor {
+  position: relative;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.estatisticas {
+  display: grid;
+  gap: 2rem;
+}
+
+.graficos {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .graficos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.grafico-titulo {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.grafico-corpo {
+  height: 18rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.barras {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.barras-linha {
+  display: grid;
+  grid-template-columns: 7rem 1fr 2rem;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.barras-linha > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barras-linha > span:last-child {
+  text-align: right;
+  color: var(--cor-mudo);
+}
+
+.barras-trilho {
+  height: 1rem;
+  border-radius: 0.25rem;
+  background: var(--cor-suave);
+}
+
+.barras-preenchimento {
+  height: 100%;
+  border-radius: 0 0.25rem 0.25rem 0;
+  background: var(--cor-principal);
+}
+
+.colunas {
+  display: flex;
+  gap: 0.25rem;
+  height: 100%;
+}
+
+.coluna {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.coluna-area {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 1.25rem;
+  border-bottom: 1px solid var(--cor-campo);
+}
+
+.coluna-barra {
+  position: relative;
+  width: 100%;
+  max-width: 3rem;
+  min-height: 2px;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: var(--cor-principal);
+}
+
+.coluna-valor {
+  position: absolute;
+  top: -1.125rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--cor-mudo);
+}
+
+.coluna-rotulo {
+  min-height: 2.25rem;
+  margin-top: 0.25rem;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 0.625rem;
+  line-height: 1.2;
+  color: var(--cor-mudo);
+}
+
+.dispersao {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+  padding-left: 1.5rem;
+}
+
+.dispersao-area {
+  position: relative;
+  border-bottom: 1px solid var(--cor-campo);
+  border-left: 1px solid var(--cor-campo);
+}
+
+.dispersao-nota {
+  position: absolute;
+  left: -1.5rem;
+  transform: translateY(50%);
+  font-size: 0.6875rem;
+  color: var(--cor-mudo);
+}
+
+.dispersao-linha {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px dashed var(--cor-borda);
+}
+
+.ponto {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--cor-principal);
+  opacity: 0.8;
+  transform: translate(-50%, 50%);
+}
+
+.dispersao-eixo {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--cor-mudo);
+}
+
+.nao-encontrado {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  min-height: 100svh;
+  align-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.nao-encontrado h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.nao-encontrado p {
+  color: var(--cor-mudo);
+}

@@ -1,11 +1,11 @@
-import { Loader2 } from "lucide-react"
 import { useState, type ChangeEvent, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
+import Botao from "@/components/Botao"
+import Icone from "@/components/Icone"
 import FormAlert from "@/components/FormAlert"
 import FormField from "@/components/FormField"
 import PasswordField from "@/components/PasswordField"
 import PasswordStrengthMeter from "@/components/PasswordStrengthMeter"
-import { Button } from "@/components/ui/button"
 import { ApiError, registerUser } from "@/services/api"
 import { formatCpf, isStrongPassword, isValidCpf, isValidEmail, onlyDigits } from "@/utils/validators"
 
@@ -75,7 +75,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
+    <form onSubmit={onSubmit} noValidate className="formulario">
       {apiError && <FormAlert>{apiError}</FormAlert>}
       <FormField label="Nome completo" name="nome" autoComplete="name" value={form.nome} onChange={set("nome")} onBlur={blur("nome")} error={errors.nome} />
       <FormField label="Email" name="email" type="email" autoComplete="email" placeholder="voce@email.com" value={form.email} onChange={set("email")} onBlur={blur("email")} error={errors.email} />
@@ -83,10 +83,10 @@ export default function RegisterForm() {
       <PasswordField label="Senha" name="senha" autoComplete="new-password" value={form.senha} onChange={set("senha")} onBlur={blur("senha")} error={errors.senha} />
       <PasswordStrengthMeter password={form.senha} />
       <PasswordField label="Confirmar senha" name="confirmarSenha" autoComplete="new-password" value={form.confirmarSenha} onChange={set("confirmarSenha")} onBlur={blur("confirmarSenha")} error={errors.confirmarSenha} />
-      <Button type="submit" size="lg" className="h-10 w-full" disabled={loading}>
-        {loading && <Loader2 className="animate-spin" />}
+      <Botao type="submit" tamanho="grande" className="botao-total" disabled={loading}>
+        {loading && <Icone nome="carregando" className="girando" />}
         {loading ? "Cadastrando…" : "Criar conta"}
-      </Button>
+      </Botao>
     </form>
   )
 }

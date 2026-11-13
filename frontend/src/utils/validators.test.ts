@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatCpf, isStrongPassword, isValidCpf, isValidEmail } from './validators';
+import { formatCpf, isHttpUrl, isStrongPassword, isValidCpf, isValidEmail } from './validators';
 
 describe('isValidCpf', () => {
   it('aceita CPF válido (com e sem máscara)', () => {
@@ -34,5 +34,13 @@ describe('isStrongPassword', () => {
     expect(isStrongPassword('Abcdef12')).toBe(false);
     expect(isStrongPassword('abcdef12')).toBe(false);
     expect(isStrongPassword('Ab1')).toBe(false);
+  });
+});
+
+describe('isHttpUrl', () => {
+  it('aceita só links http e https', () => {
+    expect(isHttpUrl('https://exemplo.com/capa.jpg')).toBe(true);
+    expect(isHttpUrl('javascript:alert(1)')).toBe(false);
+    expect(isHttpUrl('capa.jpg')).toBe(false);
   });
 });
