@@ -1,58 +1,42 @@
 
 import type { Request, Response } from 'express';
+import { UnauthorizedError } from '../../../errors/AppError';
 import { UserService } from '../services/UserService';
 
 export class UserController {
   private readonly userService = new UserService();
 
-  async create(req: Request, res: Response): Promise<Response> {
-    try {
-      const user = await this.userService.createUser(req.body);
+  async create(req: Request, res: Response): Promise<void> {
+    const user = await this.userService.createUser(req.body);
 
-      return res.status(201).json({
-        status: 'success',
-        message: 'Usuário cadastrado com sucesso!',
-        user: {
-          id: user.getId(),
-          name: user.getName(),
-          email: user.getEmail(),
-          cpf: user.getCpf()
-        }
-      });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        const isDuplicate =
-          error.message === 'Este e-mail já está cadastrado.' ||
-          error.message === 'Este CPF já está cadastrado.';
+    res.status(201).json({
+      status: 'success',
+      message: 'Usuário cadastrado com sucesso!',
+      id: user.getId(),
+      user: user.toPublic()
+    });
+  }
 
-        const isValidationError =
-          error.message === 'Todos os campos são obrigatórios.' ||
-          error.message === 'Informe um e-mail válido.' ||
-          error.message === 'O CPF deve conter 11 dígitos.' ||
-          error.message === 'Informe um CPF válido.' ||
-          error.message.startsWith('A senha deve ter');
+  async me(req: Request, res: Response): Promise<void> {
+    const user = await this.userService.getById(this.currentUserId(req));
 
-        if (isDuplicate) {
-          return res.status(409).json({
-            status: 'error',
-            message: error.message
-          });
-        }
+    res.status(200).json({ user: user.toPublic() });
+  }
 
-        if (isValidationError) {
-          return res.status(400).json({
-            status: 'error',
-            message: error.message
-          });
-        }
-      }
+  async updateMe(req: Request, res: Response): Promise<void> {
+    const user = await this.userService.updateUser(
+      this.currentUserId(req),
+      req.body
+    );
 
-      console.error('Erro interno ao cadastrar usuário:', error);
+    res.status(200).json({ user: user.toPublic() });
+  }
 
-      return res.status(500).json({
-        status: 'error',
-        message: 'Erro interno ao cadastrar usuário.'
-      });
+  private currentUserId(req: Request): number {
+    if (req.userId === undefined) {
+      throw new UnauthorizedError();
     }
+
+    return req.userId;
   }
 }
