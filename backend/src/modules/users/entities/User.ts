@@ -1,4 +1,6 @@
 
+export type UserRole = 'admin' | 'user';
+
 export class User {
   // Atributos privados: não podem ser acessados diretamente de fora da classe.
   private readonly id: number | null;
@@ -6,6 +8,7 @@ export class User {
   private readonly email: string;
   private readonly passwordHash: string;
   private readonly cpf: string;
+  private readonly role: UserRole;
 
   // Construtor: inicializa as propriedades do usuário.
   constructor(
@@ -13,13 +16,15 @@ export class User {
     email: string,
     passwordHash: string,
     cpf: string,
-    id: number | null = null
+    id: number | null = null,
+    role: UserRole = 'user'
   ) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.passwordHash = passwordHash;
     this.cpf = cpf;
+    this.role = role;
   }
 
   // Getters: permitem consultar os dados sem alterar os atributos.
@@ -41,5 +46,9 @@ export class User {
 
   public getCpf(): string {
     return this.cpf;
+  }
+
+  public getRole(): UserRole {
+    return this.role;
   }
 }

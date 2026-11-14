@@ -99,6 +99,7 @@ test('deve realizar login e gerar um JWT válido', async () => {
   assert.equal(result.user.id, 1);
   assert.equal(result.user.name, 'Usuário Teste');
   assert.equal(result.user.email, 'teste@email.com');
+  assert.equal(result.user.role, 'user');
 
   const decoded = jwt.verify(result.token, secret);
 
@@ -106,6 +107,7 @@ test('deve realizar login e gerar um JWT válido', async () => {
 
   if (typeof decoded !== 'string') {
     assert.equal(decoded.sub, '1');
+    assert.equal(decoded.role, 'user');
   }
 
   assert.equal('passwordHash' in result.user, false);

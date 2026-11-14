@@ -106,7 +106,7 @@ test('deve rejeitar token expirado', () => {
 
 test('deve aceitar token válido e disponibilizar o ID do usuário', () => {
   const token = jwt.sign(
-    { sub: '42' },
+    { sub: '42', role: 'user' },
     secret,
     { expiresIn: '1h' }
   );
@@ -129,4 +129,5 @@ test('deve aceitar token válido e disponibilizar o ID do usuário', () => {
   assert.equal(res.statusCode, 200);
   assert.equal(nextCalled, true);
   assert.equal(res.locals.userId, 42);
+  assert.equal(res.locals.userRole, 'user');
 });

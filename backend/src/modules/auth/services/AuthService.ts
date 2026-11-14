@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UserRepository } from '../../users/repositories/UserRepository';
 import { UserValidator } from '../../users/validators/userValidator';
+import type { UserRole } from '../../users/entities/User';
 
 // Define os dados recebidos no login.
 interface LoginDTO {
@@ -17,6 +18,7 @@ interface LoginResult {
     id: number | null;
     name: string;
     email: string;
+    role: UserRole;
   };
 }
 
@@ -66,9 +68,12 @@ export class AuthService {
       throw new Error('A chave JWT não está configurada.');
     }
 
-    // Gera o token de autenticação.
+    // Gera o token de autenticação com o ID e o papel do usuário.
     const token = jwt.sign(
-      { sub: String(user.getId()) },
+      {
+        sub: String(user.getId()),
+        role: user.getRole()
+      },
       secret,
       { expiresIn: '2h' }
     );
@@ -79,7 +84,8 @@ export class AuthService {
       user: {
         id: user.getId(),
         name: user.getName(),
-        email: user.getEmail()
+        email: user.getEmail(),
+        role: user.getRole()
       }
     };
   }

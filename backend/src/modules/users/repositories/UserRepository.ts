@@ -1,15 +1,17 @@
 
 import database from '../../../config/database';
 import { User } from '../entities/User';
+import type { UserRole } from '../entities/User';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-// Define o formato dos dados que serão retornados pelo MySQL.
+// Define o formato dos dados retornados pelo MySQL.
 interface UserRow extends RowDataPacket {
   id: number;
   name: string;
   email: string;
   password_hash: string;
   cpf: string;
+  role: UserRole;
 }
 
 export class UserRepository {
@@ -17,13 +19,14 @@ export class UserRepository {
   // Cadastra um usuário no banco de dados.
   async create(user: User): Promise<User> {
     const [result] = await database.execute<ResultSetHeader>(
-      `INSERT INTO users (name, email, password_hash, cpf)
-       VALUES (?, ?, ?, ?)`,
+      `INSERT INTO users (name, email, password_hash, cpf, role)
+       VALUES (?, ?, ?, ?, ?)`,
       [
         user.getName(),
         user.getEmail(),
         user.getPasswordHash(),
-        user.getCpf()
+        user.getCpf(),
+        user.getRole()
       ]
     );
 
@@ -33,7 +36,8 @@ export class UserRepository {
       user.getEmail(),
       user.getPasswordHash(),
       user.getCpf(),
-      result.insertId
+      result.insertId,
+      user.getRole()
     );
   }
 
@@ -55,7 +59,8 @@ export class UserRepository {
       user.email,
       user.password_hash,
       user.cpf,
-      user.id
+      user.id,
+      user.role
     );
   }
 
@@ -77,7 +82,8 @@ export class UserRepository {
       user.email,
       user.password_hash,
       user.cpf,
-      user.id
+      user.id,
+      user.role
     );
   }
 
@@ -99,7 +105,8 @@ export class UserRepository {
       user.email,
       user.password_hash,
       user.cpf,
-      user.id
+      user.id,
+      user.role
     );
   }
 
@@ -124,8 +131,7 @@ export class UserRepository {
       ]
     );
 
-    // Busca novamente o usuário para confirmar sua existência
-    // e retornar os dados atualizados do banco.
+    // Busca novamente o usuário para retornar os dados atualizados.
     return await this.findById(userId);
   }
 }
