@@ -5,6 +5,7 @@ import path from 'path';
 import database from './config/database';
 import userRoutes from './modules/users/routes/UserRoutes';
 import authRoutes from './modules/auth/routes/AuthRoutes';
+import autorRoutes from './modules/autores/routes/AutorRoutes';
 import seedInitialUsers from './database/seeds/initialUsers';
 
 // Carrega as variáveis de ambiente da raiz do projeto.
@@ -21,6 +22,7 @@ app.use(express.json());
 // Configura as rotas da API.
 app.use('/api', userRoutes);
 app.use('/api', authRoutes);
+app.use('/api', autorRoutes);
 
 // Verifica se a API está funcionando.
 app.get('/health', (_req, res) => {
