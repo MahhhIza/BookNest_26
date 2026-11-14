@@ -5,6 +5,7 @@ import path from 'path';
 import database from './config/database';
 import userRoutes from './modules/users/routes/UserRoutes';
 import authRoutes from './modules/auth/routes/AuthRoutes';
+import seedInitialUsers from './database/seeds/initialUsers';
 
 // Carrega as variáveis de ambiente da raiz do projeto.
 dotenv.config({
@@ -19,7 +20,7 @@ app.use(express.json());
 
 // Configura as rotas da API.
 app.use('/api', userRoutes);
-app.use('/api', authRoutes);  
+app.use('/api', authRoutes);
 
 // Verifica se a API está funcionando.
 app.get('/health', (_req, res) => {
@@ -63,7 +64,24 @@ app.get('/health/db', async (_req, res) => {
   }
 });
 
-// Inicializa o servidor.
-app.listen(PORT, () => {
-  console.log(`BookNest API disponível na porta ${PORT}`);
-});
+// Inicializa o servidor e executa o seed quando habilitado.
+async function startServer(): Promise<void> {
+  try {
+    if (process.env.SEED_INITIAL_USERS === 'true') {
+      // Confirma que o banco está acessível antes do seed.
+      await database.query('SELECT 1');
+
+      // Cadastra as contas iniciais, se necessário.
+      await seedInitialUsers();
+    }
+
+    app.listen(PORT, () => {
+      console.log(`BookNest API disponível na porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Não foi possível inicializar o servidor:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
