@@ -7,6 +7,7 @@ import userRoutes from './modules/users/routes/UserRoutes';
 import authRoutes from './modules/auth/routes/AuthRoutes';
 import autorRoutes from './modules/autores/routes/AutorRoutes';
 import categoriaRoutes from './modules/categorias/routes/CategoriaRoutes';
+import livroRoutes from './modules/livros/routes/LivroRoutes';
 import seedInitialUsers from './database/seeds/initialUsers';
 
 // Carrega as variáveis de ambiente da raiz do projeto.
@@ -25,6 +26,7 @@ app.use('/api', userRoutes);
 app.use('/api', authRoutes);
 app.use('/api', autorRoutes);
 app.use('/api', categoriaRoutes);
+app.use('/api', livroRoutes);
 
 // Verifica se a API está funcionando.
 app.get('/health', (_req, res) => {
