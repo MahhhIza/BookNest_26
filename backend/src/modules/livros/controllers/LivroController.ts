@@ -143,39 +143,61 @@ export class LivroController {
     }
   }
 
-  async delete(req: Request, res: Response): Promise<void> {
-    try {
-      const id = Number(req.params.id);
+async delete(req: Request, res: Response): Promise<void> {
+  try {
+    const id = Number(req.params.id);
 
-      await this.livroService.delete(id);
+    await this.livroService.delete(id);
 
-      res.status(200).json({
-        status: 'success',
-        message: 'Livro excluído com sucesso.'
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : '';
+    res.status(200).json({
+      status: 'success',
+      message: 'Livro excluído com sucesso.'
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
 
-      if (message === 'Livro não encontrado.') {
-        res.status(404).json({
-          status: 'error',
-          message
-        });
-        return;
-      }
+    // Identifica erros de chave estrangeira do MySQL.
+    const codigoErro =
+      error && typeof error === 'object' && 'code' in error
+        ? error.code
+        : undefined;
 
-      if (message === 'ID inválido.') {
-        res.status(400).json({
-          status: 'error',
-          message
-        });
-        return;
-      }
+    const numeroErro =
+      error && typeof error === 'object' && 'errno' in error
+        ? error.errno
+        : undefined;
 
-      res.status(500).json({
+    if (
+      codigoErro === 'ER_ROW_IS_REFERENCED_2' ||
+      numeroErro === 1451
+    ) {
+      res.status(409).json({
         status: 'error',
-        message: 'Erro interno ao excluir livro.'
+        message: 'Não é possível excluir este livro porque existem leituras vinculadas a ele.'
       });
+      return;
     }
+
+    if (message === 'Livro não encontrado.') {
+      res.status(404).json({
+        status: 'error',
+        message
+      });
+      return;
+    }
+
+    if (message === 'ID inválido.') {
+      res.status(400).json({
+        status: 'error',
+        message
+      });
+      return;
+    }
+
+    res.status(500).json({
+      status: 'error',
+      message: 'Erro interno ao excluir livro.'
+    });
   }
+}
 }
