@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { adminMiddleware } from '../../middlewares/adminMiddleware';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import type { BaseController } from '../controllers/BaseController';
 
@@ -11,9 +12,9 @@ export function criarRotasCrud<T extends { id: number }, TInput>(
 
   rotas.get('/', controller.listar);
   rotas.get('/:id', controller.buscar);
-  rotas.post('/', controller.criar);
-  rotas.put('/:id', controller.atualizar);
-  rotas.delete('/:id', controller.remover);
+  rotas.post('/', adminMiddleware, controller.criar);
+  rotas.put('/:id', adminMiddleware, controller.atualizar);
+  rotas.delete('/:id', adminMiddleware, controller.remover);
 
   return rotas;
 }

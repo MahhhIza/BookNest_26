@@ -65,3 +65,19 @@ export function calcularResumo(livros: Livro[], leituras: Leitura[]): Resumo {
     notaMedia: notas.length ? notas.reduce((soma, n) => soma + n, 0) / notas.length : null,
   }
 }
+
+export function regressaoLinear(pontos: PaginasPorNota[]): { inclinacao: number; intercepto: number } | null {
+  const n = pontos.length
+  if (n < 2) return null
+  const mediaX = pontos.reduce((soma, p) => soma + p.paginas, 0) / n
+  const mediaY = pontos.reduce((soma, p) => soma + p.nota, 0) / n
+  let cima = 0
+  let baixo = 0
+  for (const p of pontos) {
+    cima += (p.paginas - mediaX) * (p.nota - mediaY)
+    baixo += (p.paginas - mediaX) ** 2
+  }
+  if (baixo === 0) return null
+  const inclinacao = cima / baixo
+  return { inclinacao, intercepto: mediaY - inclinacao * mediaX }
+}

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { getSaltRounds } from '../../../config/env';
 import { ConflictError, NotFoundError, ValidationError } from '../../../errors/AppError';
 import { User } from '../entities/User';
+import type { UserRole } from '../entities/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { UserValidator } from '../validators/userValidator';
 
@@ -54,14 +55,44 @@ export class UserService {
 
     const passwordHash = await bcrypt.hash(data.password, getSaltRounds());
 
+    const total = await this.userRepository.count();
+    const role = total === 0 ? 'admin' : 'user';
+
     const user = new User(
       name,
       email,
       passwordHash,
-      cpf
+      cpf,
+      null,
+      role
     );
 
     return await this.userRepository.create(user);
+  }
+
+  async listAll(): Promise<User[]> {
+    return await this.userRepository.findAll();
+  }
+
+  async changeRole(
+    actorId: number,
+    targetId: number,
+    role: unknown
+  ): Promise<User> {
+    if (role !== 'admin' && role !== 'user') {
+      throw new ValidationError('Papel inválido. Use "admin" ou "user".');
+    }
+
+    if (actorId === targetId) {
+      throw new ValidationError(
+        'Você não pode mudar o seu próprio papel.'
+      );
+    }
+
+    const target = await this.getById(targetId);
+    await this.userRepository.updateRole(targetId, role as UserRole);
+
+    return await this.getById(target.getId() as number);
   }
 
   async getById(id: number): Promise<User> {

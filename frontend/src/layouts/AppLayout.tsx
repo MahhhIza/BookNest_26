@@ -1,11 +1,24 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, Outlet } from "react-router-dom"
 import Icone from "@/components/Icone"
 import Logo from "@/components/Logo"
 import MenuLateral from "@/components/MenuLateral"
+import { useAuth } from "@/hooks/useAuth"
+import { getProfile } from "@/services/api"
 
 export default function AppLayout() {
   const [aberto, setAberto] = useState(false)
+  const { usuario, atualizarUsuario } = useAuth()
+
+  const papelAtual = usuario?.papel
+
+  useEffect(() => {
+    getProfile()
+      .then((perfil) => {
+        if (perfil.papel !== papelAtual) atualizarUsuario({ id: perfil.id, nome: perfil.nome, email: perfil.email, papel: perfil.papel })
+      })
+      .catch(() => undefined)
+  }, [papelAtual, atualizarUsuario])
 
   return (
     <div className="app">

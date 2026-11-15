@@ -15,7 +15,7 @@ export class User {
     passwordHash: string,
     cpf: string,
     id: number | null = null,
-    role: UserRole = 'admin'
+    role: UserRole = 'user'
   ) {
     this.id = id;
     this.name = name;

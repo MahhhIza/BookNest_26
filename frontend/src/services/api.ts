@@ -122,3 +122,37 @@ export async function updateProfile(payload: UpdateProfilePayload) {
   const { data } = await api.put<{ user: UsuarioApi }>("/users/me", body)
   return { ...paraUsuario(data.user), cpf: data.user.cpf ?? payload.cpf } satisfies Perfil
 }
+
+const MOCK_USUARIOS_KEY = "booknest.mock.usuarios"
+
+function mockUsuarios(): Perfil[] {
+  const salvo = localStorage.getItem(MOCK_USUARIOS_KEY)
+  if (salvo) return JSON.parse(salvo) as Perfil[]
+  const lista: Perfil[] = [
+    { id: 1, nome: "Administrador", email: ADMIN_DEMONSTRACAO, papel: "admin", cpf: "" },
+    { id: 2, nome: "Maria Souza", email: "maria@booknest.com", papel: "usuario", cpf: "" },
+    { id: 3, nome: "João Lima", email: "joao@booknest.com", papel: "usuario", cpf: "" },
+  ]
+  localStorage.setItem(MOCK_USUARIOS_KEY, JSON.stringify(lista))
+  return lista
+}
+
+export async function listUsers(): Promise<Usuario[]> {
+  if (isMock()) {
+    await wait(300)
+    return mockUsuarios()
+  }
+  const { data } = await api.get<{ users: UsuarioApi[] }>("/users")
+  return data.users.map(paraUsuario)
+}
+
+export async function changeUserRole(id: number, papel: Papel): Promise<Usuario> {
+  if (isMock()) {
+    await wait(300)
+    const lista = mockUsuarios().map((u) => (u.id === id ? { ...u, papel } : u))
+    localStorage.setItem(MOCK_USUARIOS_KEY, JSON.stringify(lista))
+    return lista.find((u) => u.id === id) as Usuario
+  }
+  const { data } = await api.put<{ user: UsuarioApi }>(`/users/${id}/role`, { role: papel === "admin" ? "admin" : "user" })
+  return paraUsuario(data.user)
+}

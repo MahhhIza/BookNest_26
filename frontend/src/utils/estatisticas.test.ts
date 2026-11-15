@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { Leitura } from "@/types/leitura"
 import type { Livro } from "@/types/livro"
-import { calcularResumo, contarPorCategoria, faixasDePaginas, leiturasPorMes } from "./estatisticas"
+import { calcularResumo, contarPorCategoria, faixasDePaginas, leiturasPorMes, regressaoLinear } from "./estatisticas"
 
 const livros: Livro[] = [
   { id: 1, titulo: "A", autorId: 1, categoriaId: 1, paginas: 90, ano: 2000 },
@@ -41,5 +41,19 @@ describe("estatísticas da biblioteca", () => {
 
   it("calcula o resumo", () => {
     expect(calcularResumo(livros, leituras)).toEqual({ totalLivros: 3, livrosLidos: 2, paginasLidas: 440, notaMedia: 4 })
+  })
+
+  it("calcula a reta da regressão linear", () => {
+    const reta = regressaoLinear([
+      { paginas: 100, nota: 2 },
+      { paginas: 200, nota: 3 },
+      { paginas: 300, nota: 4 },
+    ])
+    expect(reta?.inclinacao).toBeCloseTo(0.01)
+    expect(reta?.intercepto).toBeCloseTo(1)
+  })
+
+  it("não calcula regressão com menos de dois pontos", () => {
+    expect(regressaoLinear([{ paginas: 100, nota: 2 }])).toBeNull()
   })
 })

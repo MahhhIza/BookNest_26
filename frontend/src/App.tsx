@@ -14,6 +14,7 @@ import Login from "@/pages/Login"
 import NotFound from "@/pages/NotFound"
 import Profile from "@/pages/Profile"
 import Register from "@/pages/Register"
+import Usuarios from "@/pages/Usuarios"
 import AdminRoute from "@/routes/AdminRoute"
 import ProtectedRoute from "@/routes/ProtectedRoute"
 import PublicOnlyRoute from "@/routes/PublicOnlyRoute"
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/autores" element={<Autores />} />
           <Route path="/leituras" element={<Leituras />} />
           <Route element={<AdminRoute />}>
+            <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/categorias/nova" element={<CategoriaForm />} />
             <Route path="/categorias/:id/editar" element={<CategoriaForm />} />
             <Route path="/livros/novo" element={<LivroForm />} />

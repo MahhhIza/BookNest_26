@@ -1,5 +1,6 @@
 
 import { Router } from 'express';
+import { adminMiddleware } from '../../../middlewares/adminMiddleware';
 import { authMiddleware } from '../../../middlewares/authMiddleware';
 import { UserController } from '../controllers/UserController';
 
@@ -22,6 +23,20 @@ userRoutes.put(
   '/users/me',
   authMiddleware,
   userController.updateMe.bind(userController)
+);
+
+userRoutes.get(
+  '/users',
+  authMiddleware,
+  adminMiddleware,
+  userController.list.bind(userController)
+);
+
+userRoutes.put(
+  '/users/:id/role',
+  authMiddleware,
+  adminMiddleware,
+  userController.changeRole.bind(userController)
 );
 
 export default userRoutes;

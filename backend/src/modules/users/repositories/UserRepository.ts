@@ -60,6 +60,29 @@ export class UserRepository {
     );
   }
 
+  async count(): Promise<number> {
+    const [rows] = await database.execute<RowDataPacket[]>(
+      'SELECT COUNT(*) AS total FROM users'
+    );
+
+    return Number(rows[0].total);
+  }
+
+  async findAll(): Promise<User[]> {
+    const [rows] = await database.execute<UserRow[]>(
+      'SELECT * FROM users ORDER BY id'
+    );
+
+    return rows.map((row) => this.toEntity(row));
+  }
+
+  async updateRole(id: number, role: UserRole): Promise<void> {
+    await database.execute('UPDATE users SET role = ? WHERE id = ?', [
+      role,
+      id
+    ]);
+  }
+
   async findById(id: number): Promise<User | null> {
     const [rows] = await database.execute<UserRow[]>(
       'SELECT * FROM users WHERE id = ?',

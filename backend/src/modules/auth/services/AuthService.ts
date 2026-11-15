@@ -4,6 +4,7 @@ import type { SignOptions } from 'jsonwebtoken';
 import { getJwtExpiresIn, getJwtSecret } from '../../../config/env';
 import { UnauthorizedError, ValidationError } from '../../../errors/AppError';
 import type { PublicUser } from '../../users/entities/User';
+import { UserValidator } from '../../users/validators/userValidator';
 import { UserRepository } from '../../users/repositories/UserRepository';
 
 interface LoginDTO {
@@ -23,6 +24,8 @@ export class AuthService {
     if (!data.email?.trim() || !data.password) {
       throw new ValidationError('Informe e-mail e senha.');
     }
+
+    UserValidator.validateEmail(data.email.trim());
 
     const user = await this.userRepository.findByEmail(
       data.email.trim().toLowerCase()

@@ -83,7 +83,7 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
         }
       />
 
-      {!isAdmin && <p className="aviso">Você está só consultando. Para cadastrar, editar ou excluir, entre como administrador.</p>}
+      {!isAdmin && <p className="aviso">Você está só consultando. Para cadastrar, editar ou excluir, peça a um administrador.</p>}
 
       {galeria && (
         <div className="alternador" role="group" aria-label="Forma de exibir">

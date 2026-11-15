@@ -1,6 +1,6 @@
 
 import type { Request, Response } from 'express';
-import { UnauthorizedError } from '../../../errors/AppError';
+import { UnauthorizedError, ValidationError } from '../../../errors/AppError';
 import { UserService } from '../services/UserService';
 
 export class UserController {
@@ -27,6 +27,28 @@ export class UserController {
     const user = await this.userService.updateUser(
       this.currentUserId(req),
       req.body
+    );
+
+    res.status(200).json({ user: user.toPublic() });
+  }
+
+  async list(_req: Request, res: Response): Promise<void> {
+    const users = await this.userService.listAll();
+
+    res.status(200).json({ users: users.map((u) => u.toPublic()) });
+  }
+
+  async changeRole(req: Request, res: Response): Promise<void> {
+    const targetId = Number(req.params.id);
+
+    if (!Number.isInteger(targetId) || targetId <= 0) {
+      throw new ValidationError('Id inválido.');
+    }
+
+    const user = await this.userService.changeRole(
+      this.currentUserId(req),
+      targetId,
+      req.body?.role
     );
 
     res.status(200).json({ user: user.toPublic() });
