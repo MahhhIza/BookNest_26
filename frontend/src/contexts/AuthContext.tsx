@@ -24,7 +24,9 @@ function readStoredUser(): Usuario | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(getToken)
-  const [usuario, setUsuario] = useState<Usuario | null>(readStoredUser)
+  const [usuario, setUsuario] = useState<Usuario | null>(() =>
+    getToken() ? readStoredUser() : null
+  )
 
   const login = useCallback(async (payload: LoginPayload) => {
     const res = await loginUser(payload)
