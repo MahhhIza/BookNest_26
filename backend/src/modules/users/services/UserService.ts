@@ -34,6 +34,9 @@ export class UserService {
     }
 
     const name = data.name.trim();
+    if (name.split(/\s+/).length < 2) {
+      throw new ValidationError('Informe seu nome e sobrenome.');
+    }
     const email = data.email.trim().toLowerCase();
     const cpf = data.cpf.replace(/\D/g, '');
 
