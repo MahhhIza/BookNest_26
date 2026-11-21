@@ -29,7 +29,7 @@ function validate(v: Values): Errors {
   if (!v.autorId) e.autorId = "Escolha o autor."
   if (!v.categoriaId) e.categoriaId = "Escolha a categoria."
   if (!Number.isInteger(paginas) || paginas < 1) e.paginas = "Informe o número de páginas."
-  if (!Number.isInteger(ano) || ano < 1000 || ano > new Date().getFullYear()) e.ano = "Informe um ano válido."
+  if (!Number.isInteger(ano) || ano < 1 || ano > new Date().getFullYear()) e.ano = "Informe um ano válido."
   const capa = v.capaUrl.trim()
   if (capa && (capa.length > 500 || !isHttpUrl(capa))) e.capaUrl = "Informe um link válido, começando com http:// ou https://."
   return e

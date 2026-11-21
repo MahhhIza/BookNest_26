@@ -15,7 +15,7 @@ export class AutorService extends BaseService<Autor, AutorInput> {
     const validador = Validador.de(dados);
 
     const nome = validador.texto('nome', 150);
-    const nacionalidade = validador.textoOpcional('nacionalidade', 100) ?? '';
+    const nacionalidade = validador.textoOpcional('nacionalidade', 60) ?? '';
 
     validador.concluir();
 

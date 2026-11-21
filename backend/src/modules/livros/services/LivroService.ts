@@ -17,7 +17,7 @@ export class LivroService extends BaseService<Livro, LivroInput> {
   protected validar(dados: unknown): LivroInput {
     const validador = Validador.de(dados);
 
-    const anoMaximo = new Date().getFullYear() + 1;
+    const anoMaximo = new Date().getFullYear();
 
     const titulo = validador.texto('titulo', 200);
     const autorId = validador.inteiro('autorId', 1, 2147483647);
