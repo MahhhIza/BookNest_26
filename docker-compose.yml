@@ -37,6 +37,7 @@ services:
         condition: service_healthy
     networks:
       - rede-interna
+      - rede-publica
 
   frontend:
     build: ./frontend
