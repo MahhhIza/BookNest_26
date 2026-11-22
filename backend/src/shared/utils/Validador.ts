@@ -4,7 +4,7 @@ import type { ErrosDeCampo } from '../../errors/AppError';
 export class Validador {
   private readonly erros: ErrosDeCampo = {};
 
-  private constructor(private readonly dados: Record<string, unknown>) {}
+  private constructor(private readonly dados: Record<string, unknown>) { }
 
   static de(corpo: unknown): Validador {
     if (typeof corpo !== 'object' || corpo === null || Array.isArray(corpo)) {
@@ -77,12 +77,30 @@ export class Validador {
   data(campo: string): string {
     const valor = this.dados[campo];
 
-    if (
-      typeof valor !== 'string' ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(valor) ||
-      Number.isNaN(Date.parse(valor))
-    ) {
+    if (typeof valor !== 'string') {
       this.erros[campo] = 'Informe uma data no formato AAAA-MM-DD.';
+      return '';
+    }
+
+    const correspondencia = /^(\d{4})-(\d{2})-(\d{2})$/.exec(valor);
+
+    if (!correspondencia) {
+      this.erros[campo] = 'Informe uma data no formato AAAA-MM-DD.';
+      return '';
+    }
+
+    const ano = Number(correspondencia[1]);
+    const mes = Number(correspondencia[2]);
+    const dia = Number(correspondencia[3]);
+
+    const data = new Date(Date.UTC(ano, mes - 1, dia));
+
+    if (
+      data.getUTCFullYear() !== ano ||
+      data.getUTCMonth() !== mes - 1 ||
+      data.getUTCDate() !== dia
+    ) {
+      this.erros[campo] = 'Informe uma data válida.';
       return '';
     }
 

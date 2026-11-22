@@ -1,6 +1,17 @@
 
 export type UserRole = 'admin' | 'user';
 
+export interface PublicUser {
+  id: number | null;
+  name: string;
+  email: string;
+  role: UserRole;
+}
+
+export interface ProfileUser extends PublicUser {
+  cpf: string;
+}
+
 export class User {
   private readonly id: number | null;
   private readonly name: string;
@@ -54,16 +65,14 @@ export class User {
       id: this.id,
       name: this.name,
       email: this.email,
-      cpf: this.cpf,
       role: this.role
     };
   }
-}
 
-export interface PublicUser {
-  id: number | null;
-  name: string;
-  email: string;
-  cpf: string;
-  role: UserRole;
+  public toProfile(): ProfileUser {
+    return {
+      ...this.toPublic(),
+      cpf: this.cpf
+    };
+  }
 }

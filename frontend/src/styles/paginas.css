@@ -398,3 +398,113 @@
 .nao-encontrado p {
   color: var(--cor-mudo);
 }
+
+
+.livro-pesquisa {
+  display: grid;
+  gap: 0.875rem;
+  padding: 1rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-cartao);
+}
+
+.livro-pesquisa h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.livro-pesquisa-controles {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.livro-pesquisa-resultados {
+  display: grid;
+  gap: 0.625rem;
+  padding: 0;
+  margin-top: 0.75rem;
+  list-style: none;
+}
+
+.livro-pesquisa-selecao {
+  display: flex;
+  width: 100%;
+  gap: 0.875rem;
+  padding: 0.75rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-cartao);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.livro-pesquisa-selecao:hover,
+.livro-pesquisa-selecao:focus-visible {
+  border-color: var(--cor-principal);
+  background: var(--cor-suave);
+}
+
+.livro-pesquisa-capa {
+  flex: 0 0 3.75rem;
+  width: 3.75rem;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 0.125rem;
+  background: var(--cor-suave);
+}
+
+.livro-pesquisa-sem-capa {
+  display: grid;
+  place-items: center;
+  padding: 0.25rem;
+  color: var(--cor-mudo);
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.livro-pesquisa-detalhes {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  min-width: 0;
+  font-size: 0.8125rem;
+}
+
+.livro-pesquisa-detalhes strong {
+  font-size: 0.9rem;
+}
+
+.livro-pesquisa-detalhes span {
+  overflow-wrap: anywhere;
+  color: var(--cor-mudo);
+}
+
+.livro-pesquisa-detalhes .livro-pesquisa-acao {
+  color: var(--cor-principal);
+  font-weight: 600;
+}
+
+.livro-pesquisa-aviso {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0.75rem;
+  border-radius: var(--raio);
+  background: var(--cor-suave);
+  font-size: 0.8125rem;
+}
+
+.livro-pesquisa-aviso a {
+  color: var(--cor-principal);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .livro-pesquisa-controles {
+    grid-template-columns: 1fr;
+  }
+}

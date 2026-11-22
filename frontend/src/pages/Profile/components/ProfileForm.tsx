@@ -16,7 +16,11 @@ const EMPTY: Form = { nome: "", cpf: "", senha: "", confirmarSenha: "" }
 
 function validate(f: Form): Errors {
   const e: Errors = {}
-  if (f.nome.trim().split(/\s+/).length < 2) e.nome = "Informe seu nome e sobrenome."
+  if (!f.nome.trim()) {
+    e.nome = "Informe seu nome completo."
+  } else if (f.nome.trim().split(/\s+/).length < 2) {
+    e.nome = "Informe seu nome e sobrenome."
+  }
   if (!f.cpf) e.cpf = "Informe seu CPF."
   else if (!isValidCpf(f.cpf)) e.cpf = "CPF inválido."
   if (f.senha || f.confirmarSenha) {

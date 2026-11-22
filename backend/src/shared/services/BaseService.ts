@@ -83,12 +83,16 @@ export abstract class BaseService<T extends { id: number }, TInput> {
       throw this.traduzirErro(erro);
     }
   }
-
+  
   async remover(id: number): Promise<void> {
     await this.buscar(id);
 
     try {
-      await this.repositorio.delete(id);
+      const removido = await this.repositorio.delete(id);
+
+      if (!removido) {
+        throw new NotFoundError();
+      }
     } catch (erro: unknown) {
       throw this.traduzirErro(erro);
     }

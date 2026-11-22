@@ -10,7 +10,14 @@ import { STATUS_LEITURA, type LeituraInput, type StatusLeitura } from "@/types/l
 type Values = { livroId: string; status: StatusLeitura; nota: string; concluidaEm: string }
 type Errors = Partial<Record<keyof LeituraInput, string>>
 
-const hoje = () => new Date().toISOString().slice(0, 10)
+const hoje = () => {
+  const data = new Date();
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
+};
 
 const toValues = (l?: LeituraInput): Values => ({
   livroId: l ? String(l.livroId) : "",

@@ -17,9 +17,15 @@ export default function UserMenu({ mostrarNome = false }: { mostrarNome?: boolea
   useEffect(() => {
     if (!aberto) return
     const fecharFora = (ev: MouseEvent) => {
-      if (!raiz.current?.contains(ev.target as Node)) setAberto(false)
+      if (!raiz.current?.contains(ev.target as Node)) {
+        setAberto(false)
+      }
     }
-    const fecharComEsc = (ev: KeyboardEvent) => ev.key === "Escape" && setAberto(false)
+    const fecharComEsc = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") {
+        setAberto(false)
+      }
+    }
     document.addEventListener("mousedown", fecharFora)
     document.addEventListener("keydown", fecharComEsc)
     return () => {
