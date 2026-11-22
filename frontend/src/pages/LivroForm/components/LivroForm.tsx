@@ -402,7 +402,7 @@ export default function LivroForm({
       {avisoCategoria && (
         <div className="livro-pesquisa-aviso" role="status">
           <p>{avisoCategoria}</p>
-          <Link to="/categorias/novo" target="_blank" rel="noreferrer">
+          <Link to="/categorias/nova" target="_blank" rel="noreferrer">
             Cadastrar categoria em outra aba
           </Link>
         </div>
