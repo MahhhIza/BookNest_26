@@ -9,6 +9,7 @@ interface OpenLibraryBook {
   key?: string;
   title?: string;
   author_name?: string[];
+  subject?: string[];
   first_publish_year?: number;
   number_of_pages_median?: number;
   cover_i?: number;
@@ -24,6 +25,7 @@ export interface LivroEncontrado {
   openLibraryId: string;
   titulo: string;
   autores: string[];
+  assuntos: string[];
   anoPublicacao: number | null;
   paginas: number | null;
   capaUrl: string | null;
@@ -41,9 +43,9 @@ const resolverOpenLibrary: LookupFunction = (
 
       if (!endereco) {
         callback(
-            new Error('Nenhum endereço DNS encontrado.') as NodeJS.ErrnoException,
-            '',
-            0
+          new Error('Nenhum endereço DNS encontrado.') as NodeJS.ErrnoException,
+          '',
+          0
         );
         return;
       }
@@ -106,7 +108,7 @@ export class OpenLibraryService {
 
   async pesquisar(
     termo: string,
-    limite = 10
+    limite = 5
   ): Promise<{
     total: number;
     resultados: LivroEncontrado[];
@@ -133,6 +135,7 @@ export class OpenLibraryService {
         'key',
         'title',
         'author_name',
+        'subject',
         'first_publish_year',
         'number_of_pages_median',
         'cover_i',
@@ -186,6 +189,7 @@ export class OpenLibraryService {
           openLibraryId: livro.key!,
           titulo: livro.title!,
           autores: livro.author_name ?? [],
+          assuntos: (livro.subject ?? []).slice(0, 20),
           anoPublicacao: livro.first_publish_year ?? null,
           paginas: livro.number_of_pages_median ?? null,
           capaUrl: livro.cover_i

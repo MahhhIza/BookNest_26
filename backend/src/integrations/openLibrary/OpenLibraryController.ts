@@ -16,7 +16,7 @@ export class OpenLibraryController {
       );
     }
 
-    let limite = 10;
+    let limite = 5;
 
     if (limiteQuery !== undefined) {
       if (
