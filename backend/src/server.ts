@@ -11,6 +11,7 @@ import livroRoutes from './modules/livros/routes/LivroRoutes';
 import leituraRoutes from './modules/leituras/routes/LeituraRoutes';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import openLibraryRoutes from './integrations/openLibrary/OpenLibraryRoutes';
+import minhaEstanteRoutes from './modules/minhaEstante/routes/MinhaEstanteRoutes';
 
 dotenv.config({
   path: path.resolve(__dirname, '../../.env')
@@ -33,6 +34,7 @@ app.use('/api/autores', autorRoutes);
 app.use('/api/leituras', leituraRoutes);
 app.use('/api/livros', openLibraryRoutes);
 app.use('/api/livros', livroRoutes);
+app.use('/api/minha-estante', minhaEstanteRoutes);
 
 app.get('/health', (_req, res) => {
   res.status(200).json({
