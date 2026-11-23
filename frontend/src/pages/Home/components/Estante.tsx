@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom"
 import type { Livro } from "@/types/livro"
 import type { LivroMinhaEstante } from "@/services/minhaEstanteService"
@@ -20,6 +19,7 @@ type Props = {
   livros: Livro[]
   livrosPessoais: LivroMinhaEstante[]
   lidos: Set<number>
+  lidosPessoais: Set<string>
   editavel: boolean
 }
 
@@ -27,6 +27,7 @@ export default function Estante({
   livros,
   livrosPessoais,
   lidos,
+  lidosPessoais,
   editavel,
 }: Props) {
   const todosLivros = [
@@ -42,7 +43,7 @@ export default function Estante({
       chave: `pessoal-${livro.id}`,
       titulo: livro.titulo,
       paginas: livro.paginas || 1,
-      lido: false,
+      lido: lidosPessoais.has(livro.openLibraryId),
       cor: CORES_PESSOAIS[indice % CORES_PESSOAIS.length],
       destino: null,
     })),

@@ -2,6 +2,7 @@ import type { Categoria } from "@/types/categoria"
 import type { FaixaDePaginas, LeiturasPorMes, LivrosPorCategoria, PaginasPorNota, Resumo } from "@/types/estatisticas"
 import type { Leitura } from "@/types/leitura"
 import type { Livro } from "@/types/livro"
+import type { LivroMinhaEstante } from "@/services/minhaEstanteService"
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
 const LIMITES_PAGINAS = [100, 200, 300, 400, 500]
@@ -16,16 +17,26 @@ export function contarPorCategoria(livros: Livro[], categorias: Categoria[]): Li
     .slice(0, 8)
 }
 
-export function faixasDePaginas(livros: Livro[]): FaixaDePaginas[] {
+export function faixasDePaginas(
+  livros: Livro[],
+  livrosPessoais: LivroMinhaEstante[] = [],
+): FaixaDePaginas[] {
   const rotulos = ["Até 100", "101–200", "201–300", "301–400", "401–500", "Mais de 500"]
   const contagem = rotulos.map(() => 0)
-  for (const livro of livros) {
-    const indice = LIMITES_PAGINAS.findIndex((limite) => livro.paginas <= limite)
+  const quantidades = [
+    ...livros.map((livro) => livro.paginas),
+    ...livrosPessoais
+      .map((livro) => livro.paginas)
+      .filter((paginas): paginas is number => paginas !== null),
+  ]
+
+  for (const paginas of quantidades) {
+    const indice = LIMITES_PAGINAS.findIndex((limite) => paginas <= limite)
     contagem[indice === -1 ? rotulos.length - 1 : indice] += 1
   }
+
   return rotulos.map((faixa, i) => ({ faixa, livros: contagem[i] }))
 }
-
 export function leiturasPorMes(leituras: Leitura[]): LeiturasPorMes[] {
   const concluidas = leituras.filter((l) => l.status === "Lido" && l.concluidaEm)
   if (concluidas.length === 0) return []
@@ -42,24 +53,71 @@ export function leiturasPorMes(leituras: Leitura[]): LeiturasPorMes[] {
   return serie
 }
 
-export function paginasPorNota(livros: Livro[], leituras: Leitura[]): PaginasPorNota[] {
+export function paginasPorNota(
+  livros: Livro[],
+  leituras: Leitura[],
+  livrosPessoais: LivroMinhaEstante[] = [],
+): PaginasPorNota[] {
   const porId = new Map(livros.map((l) => [l.id, l]))
+  const pessoaisPorId = new Map(livrosPessoais.map((l) => [l.openLibraryId, l]))
   const pontos: PaginasPorNota[] = []
+
   for (const leitura of leituras) {
-    const livro = porId.get(leitura.livroId)
-    if (livro && leitura.status === "Lido" && leitura.nota !== null) pontos.push({ paginas: livro.paginas, nota: leitura.nota })
+    if (leitura.status !== "Lido" || leitura.nota === null) continue
+
+    const paginas = leitura.livroId !== null
+      ? porId.get(leitura.livroId)?.paginas
+      : leitura.openLibraryId !== null
+        ? pessoaisPorId.get(leitura.openLibraryId)?.paginas ?? leitura.livroPaginas
+        : null
+
+    if (paginas !== null && paginas !== undefined) {
+      pontos.push({ paginas, nota: leitura.nota })
+    }
   }
+
   return pontos
 }
 
-export function calcularResumo(livros: Livro[], leituras: Leitura[]): Resumo {
+export function calcularResumo(
+  livros: Livro[],
+  leituras: Leitura[],
+  livrosPessoais: LivroMinhaEstante[] = [],
+): Resumo {
   const porId = new Map(livros.map((l) => [l.id, l]))
-  const lidos = new Set(leituras.filter((l) => l.status === "Lido").map((l) => l.livroId))
-  const notas = leituras.map((l) => l.nota).filter((n): n is number => n !== null)
+  const pessoaisPorId = new Map(livrosPessoais.map((l) => [l.openLibraryId, l]))
+  const lidos = new Set(
+    leituras
+      .filter((l) => l.status === "Lido")
+      .map((l) => l.livroId !== null
+        ? `catalogo:${l.livroId}`
+        : l.openLibraryId !== null
+          ? `pessoal:${l.openLibraryId}`
+          : null)
+      .filter((id): id is string => id !== null)
+  )
+
+  const notas = leituras
+    .filter((l) => l.status === "Lido")
+    .map((l) => l.nota)
+    .filter((n): n is number => n !== null)
+
   let paginasLidas = 0
-  for (const id of lidos) paginasLidas += porId.get(id)?.paginas ?? 0
+
+  for (const leitura of leituras) {
+    if (leitura.status !== "Lido") continue
+
+    if (leitura.livroId !== null) {
+      paginasLidas += porId.get(leitura.livroId)?.paginas ?? 0
+    } else if (leitura.openLibraryId !== null) {
+      paginasLidas += pessoaisPorId.get(leitura.openLibraryId)?.paginas
+        ?? leitura.livroPaginas
+        ?? 0
+    }
+  }
+
   return {
-    totalLivros: livros.length,
+    totalLivros: livros.length + livrosPessoais.length,
     livrosLidos: lidos.size,
     paginasLidas,
     notaMedia: notas.length ? notas.reduce((soma, n) => soma + n, 0) / notas.length : null,

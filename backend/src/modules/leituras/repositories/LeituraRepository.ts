@@ -5,7 +5,11 @@ import type { Leitura, LeituraInput, StatusLeitura } from '../entities/Leitura';
 
 interface LeituraRow extends RowDataPacket {
   id: number;
-  livro_id: number;
+  livro_id: number | null;
+  open_library_id: string | null;
+  livro_titulo: string;
+  livro_capa_url: string | null;
+  livro_paginas: number | null;
   status: StatusLeitura;
   nota: number | null;
   concluida_em: string | null;
@@ -16,15 +20,35 @@ interface LinhaTotal extends RowDataPacket {
 }
 
 export class LeituraRepository {
-  private paraEntidade(linha: RowDataPacket): Leitura {
-    const row = linha as LeituraRow;
+  private readonly consultaBase = `
+    SELECT
+      le.id,
+      le.livro_id,
+      le.open_library_id,
+      COALESCE(l.titulo, me.titulo) AS livro_titulo,
+      COALESCE(l.capa_url, me.capa_url) AS livro_capa_url,
+      COALESCE(l.paginas, me.paginas) AS livro_paginas,
+      le.status,
+      le.nota,
+      le.concluida_em
+    FROM leituras le
+    LEFT JOIN livros l ON l.id = le.livro_id
+    LEFT JOIN minha_estante me
+      ON me.usuario_id = le.usuario_id
+      AND me.open_library_id = le.open_library_id
+  `;
 
+  private paraEntidade(linha: LeituraRow): Leitura {
     return {
-      id: row.id,
-      livroId: row.livro_id,
-      status: row.status,
-      nota: row.nota,
-      concluidaEm: row.concluida_em
+      id: linha.id,
+      livroId: linha.livro_id,
+      openLibraryId: linha.open_library_id,
+      livroTitulo: linha.livro_titulo,
+      livroCapaUrl: linha.livro_capa_url,
+      livroPaginas: linha.livro_paginas,
+      status: linha.status,
+      nota: linha.nota,
+      concluidaEm: linha.concluida_em
     };
   }
 
@@ -35,10 +59,10 @@ export class LeituraRepository {
   ): Promise<Pagina<Leitura>> {
     const offset = (page - 1) * limit;
 
-    const [linhas] = await database.execute<RowDataPacket[]>(
-      `SELECT * FROM leituras
-       WHERE usuario_id = ?
-       ORDER BY id
+    const [linhas] = await database.execute<LeituraRow[]>(
+      `${this.consultaBase}
+       WHERE le.usuario_id = ?
+       ORDER BY le.id
        LIMIT ? OFFSET ?`,
       [usuarioId, limit, offset]
     );
@@ -58,12 +82,15 @@ export class LeituraRepository {
     id: number,
     usuarioId: number
   ): Promise<Leitura | null> {
-    const [linhas] = await database.execute<RowDataPacket[]>(
-      'SELECT * FROM leituras WHERE id = ? AND usuario_id = ?',
+    const [linhas] = await database.execute<LeituraRow[]>(
+      `${this.consultaBase}
+       WHERE le.id = ? AND le.usuario_id = ?`,
       [id, usuarioId]
     );
 
-    return linhas.length === 0 ? null : this.paraEntidade(linhas[0]);
+    return linhas.length === 0
+      ? null
+      : this.paraEntidade(linhas[0]);
   }
 
   async criar(
@@ -72,11 +99,12 @@ export class LeituraRepository {
   ): Promise<Leitura> {
     const [resultado] = await database.execute<ResultSetHeader>(
       `INSERT INTO leituras
-       (usuario_id, livro_id, status, nota, concluida_em)
-       VALUES (?, ?, ?, ?, ?)`,
+       (usuario_id, livro_id, open_library_id, status, nota, concluida_em)
+       VALUES (?, ?, ?, ?, ?, ?)`,
       [
         usuarioId,
         dados.livroId,
+        dados.openLibraryId,
         dados.status,
         dados.nota,
         dados.concluidaEm
@@ -102,10 +130,15 @@ export class LeituraRepository {
   ): Promise<Leitura | null> {
     await database.execute(
       `UPDATE leituras
-       SET livro_id = ?, status = ?, nota = ?, concluida_em = ?
+       SET livro_id = ?,
+           open_library_id = ?,
+           status = ?,
+           nota = ?,
+           concluida_em = ?
        WHERE id = ? AND usuario_id = ?`,
       [
         dados.livroId,
+        dados.openLibraryId,
         dados.status,
         dados.nota,
         dados.concluidaEm,
