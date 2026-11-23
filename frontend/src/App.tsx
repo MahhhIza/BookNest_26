@@ -35,6 +35,9 @@ export default function App() {
           <Route path="/livros" element={<Livros />} />
           <Route path="/autores" element={<Autores />} />
           <Route path="/leituras" element={<Leituras />} />
+          <Route path="/leituras/nova" element={<LeituraForm />} />
+          <Route path="/leituras/:id/editar" element={<LeituraForm />} />
+
           <Route element={<AdminRoute />}>
             <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/categorias/nova" element={<CategoriaForm />} />
@@ -43,9 +46,8 @@ export default function App() {
             <Route path="/livros/:id/editar" element={<LivroForm />} />
             <Route path="/autores/novo" element={<AutorForm />} />
             <Route path="/autores/:id/editar" element={<AutorForm />} />
-            <Route path="/leituras/nova" element={<LeituraForm />} />
-            <Route path="/leituras/:id/editar" element={<LeituraForm />} />
           </Route>
+
           <Route path="/estatisticas" element={<Estatisticas />} />
         </Route>
       </Route>

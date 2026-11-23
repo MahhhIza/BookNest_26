@@ -85,21 +85,53 @@ export class LeituraService {
   async remover(usuarioId: number, id: number): Promise<void> {
     await this.buscar(usuarioId, id);
 
-    try {
-      const removida = await this.repositorio.excluir(id, usuarioId);
+    const removida = await this.repositorio.excluir(id, usuarioId);
 
-      if (!removida) {
-        throw new NotFoundError();
-      }
-    } catch (erro: unknown) {
-      throw this.traduzirErro(erro);
+    if (!removida) {
+      throw new NotFoundError();
     }
   }
 
   private validar(dados: unknown): LeituraInput {
     const validador = Validador.de(dados);
 
-    const livroId = validador.inteiro('livroId', 1, 2147483647);
+    if (typeof dados !== 'object' || dados === null || Array.isArray(dados)) {
+      throw new ValidationError('Informe os dados da leitura.');
+    }
+
+    const entrada = dados as Record<string, unknown>;
+
+    const temLivroCatalogo =
+      entrada.livroId !== undefined &&
+      entrada.livroId !== null &&
+      entrada.livroId !== '';
+
+    const temLivroPessoal =
+      typeof entrada.openLibraryId === 'string' &&
+      entrada.openLibraryId.trim() !== '';
+
+    if (temLivroCatalogo === temLivroPessoal) {
+      throw new ValidationError(
+        'Informe um livro do catálogo ou um livro da sua estante.'
+      );
+    }
+
+    let livroId: number | null = null;
+    let openLibraryId: string | null = null;
+
+    if (temLivroCatalogo) {
+      livroId = validador.inteiro('livroId', 1, 2147483647);
+    } else {
+      openLibraryId = validador.texto('openLibraryId', 100);
+
+      if (!/^\/works\/OL\d+W$/.test(openLibraryId)) {
+        validador.erro(
+          'openLibraryId',
+          'Identificador da Open Library inválido.'
+        );
+      }
+    }
+
     const status = validador.opcao('status', STATUS_LEITURA);
 
     let nota: number | null = null;
@@ -112,7 +144,13 @@ export class LeituraService {
 
     validador.concluir();
 
-    return { livroId, status, nota, concluidaEm };
+    return {
+      livroId,
+      openLibraryId,
+      status,
+      nota,
+      concluidaEm
+    };
   }
 
   private traduzirErro(erro: unknown): unknown {
@@ -123,7 +161,9 @@ export class LeituraService {
     }
 
     if (codigo === 1452) {
-      return new ValidationError('O livro informado não existe.');
+      return new ValidationError(
+        'O livro informado não existe ou não está na sua estante.'
+      );
     }
 
     return erro;

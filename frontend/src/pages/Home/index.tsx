@@ -27,40 +27,6 @@ export default function Home() {
 
   const primeiroNome = usuario?.nome.split(" ")[0]
 
-  const { records: livros, byId: livrosPorId, loading } =
-    useAllRecords(livroService)
-
-  const { records: leituras } = useAllRecords(leituraService)
-  const { byId: autoresPorId } = useAllRecords(autorService)
-
-  const resumo = useMemo(
-    () => calcularResumo(livros, leituras),
-    [livros, leituras],
-  )
-
-  const lidos = useMemo(
-    () =>
-      new Set(
-        leituras
-          .filter((leitura) => leitura.status === "Lido")
-          .map((leitura) => leitura.livroId),
-      ),
-    [leituras],
-  )
-
-  const itens = (status: StatusLeitura) =>
-    leituras.flatMap((leitura) => {
-      const livro = livrosPorId.get(leitura.livroId)
-
-      return leitura.status === status && livro
-        ? [{
-          id: leitura.id,
-          livro,
-          autor: autoresPorId.get(livro.autorId)?.nome ?? "",
-        }]
-        : []
-    })
-
   const [minhaEstante, setMinhaEstante] = useState<LivroMinhaEstante[]>([])
   const [carregandoEstante, setCarregandoEstante] = useState(true)
   const [termo, setTermo] = useState("")
@@ -69,6 +35,81 @@ export default function Home() {
   const [adicionando, setAdicionando] = useState<string | null>(null)
   const [erro, setErro] = useState("")
   const [mensagem, setMensagem] = useState("")
+
+  const { records: livros, byId: livrosPorId, loading } =
+    useAllRecords(livroService)
+
+  const { records: leituras } = useAllRecords(leituraService)
+  const { byId: autoresPorId } = useAllRecords(autorService)
+
+  const resumo = useMemo(
+    () => calcularResumo(livros, leituras, minhaEstante),
+    [livros, leituras, minhaEstante],
+  )
+
+  const lidos = useMemo(
+    () =>
+      new Set(
+        leituras
+          .filter(
+            (leitura) =>
+              leitura.status === "Lido" && leitura.livroId !== null
+          )
+          .map((leitura) => leitura.livroId as number)
+      ),
+    [leituras],
+  )
+
+  const lidosPessoais = useMemo(
+    () =>
+      new Set(
+        leituras
+          .filter(
+            (leitura) =>
+              leitura.status === "Lido" && leitura.openLibraryId !== null
+          )
+          .map((leitura) => leitura.openLibraryId as string)
+      ),
+    [leituras],
+  )
+  const itens = (status: StatusLeitura) =>
+    leituras.flatMap((leitura) => {
+      if (leitura.status !== status) return []
+
+      if (leitura.livroId !== null) {
+        const livro = livrosPorId.get(leitura.livroId)
+
+        return livro
+          ? [{
+              id: leitura.id,
+              livro: {
+                titulo: livro.titulo,
+                categoriaId: livro.categoriaId,
+                capaUrl: livro.capaUrl,
+              },
+              autor: autoresPorId.get(livro.autorId)?.nome ?? "",
+            }]
+          : []
+      }
+
+      if (leitura.openLibraryId !== null) {
+        const livroPessoal = minhaEstante.find(
+          (livro) => livro.openLibraryId === leitura.openLibraryId
+        )
+
+        return [{
+          id: leitura.id,
+          livro: {
+            titulo: leitura.livroTitulo || livroPessoal?.titulo || "Livro sem título",
+            capaUrl: leitura.livroCapaUrl ?? livroPessoal?.capaUrl,
+          },
+          autor: livroPessoal?.autores.join(", ") || "Autor desconhecido",
+        }]
+      }
+
+      return []
+    })
+
 
   useEffect(() => {
     let ativo = true
@@ -199,6 +240,7 @@ export default function Home() {
               livros={livros}
               livrosPessoais={minhaEstante}
               lidos={lidos}
+              lidosPessoais={lidosPessoais}
               editavel={isAdmin}
             />
 

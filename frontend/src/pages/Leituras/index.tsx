@@ -17,14 +17,30 @@ export default function Leituras() {
       basePath="/leituras"
       newPath="/leituras/nova"
       newLabel="Nova leitura"
+      allowUserManagement
       emptyMessage="Você ainda não registrou nenhuma leitura."
       service={leituraService}
-      itemLabel={(l) => livros.get(l.livroId)?.titulo ?? "leitura"}
+      itemLabel={(l) => l.livroTitulo ?? livros.get(l.livroId ?? 0)?.titulo ?? "leitura"}
       columns={[
-        { header: "Livro", cell: (l) => <span className="destaque">{livros.get(l.livroId)?.titulo ?? "—"}</span> },
+        {
+          header: "Livro",
+          cell: (l) => (
+            <span className="destaque">
+              {l.livroTitulo ?? livros.get(l.livroId ?? 0)?.titulo ?? "—"}
+            </span>
+          ),
+        },
         { header: "Status", cell: (l) => l.status },
-        { header: "Nota", cell: (l) => (l.nota === null ? "—" : `${l.nota} de 5`), hideOnMobile: true },
-        { header: "Terminou em", cell: (l) => <span className="texto-mudo">{formatarData(l.concluidaEm)}</span>, hideOnMobile: true },
+        {
+          header: "Nota",
+          cell: (l) => (l.nota === null ? "—" : `${l.nota} de 5`),
+          hideOnMobile: true,
+        },
+        {
+          header: "Terminou em",
+          cell: (l) => <span className="texto-mudo">{formatarData(l.concluidaEm)}</span>,
+          hideOnMobile: true,
+        },
       ]}
     />
   )

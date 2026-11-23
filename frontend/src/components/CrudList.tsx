@@ -25,10 +25,13 @@ type Props<T extends { id: number }, TInput> = {
   columns: Column<T>[]
   itemLabel: (row: T) => string
   galeria?: (rows: T[]) => ReactNode
+  extraContent?: ReactNode
+  allowUserManagement?: boolean
 }
 
-export default function CrudList<T extends { id: number }, TInput>({ title, description, entityName, basePath, newPath, newLabel, emptyMessage, service, columns, itemLabel, galeria }: Props<T, TInput>) {
+export default function CrudList<T extends { id: number }, TInput>({ title, description, entityName, basePath, newPath, newLabel, emptyMessage, service, columns, itemLabel, galeria, extraContent, allowUserManagement }: Props<T, TInput>) {
   const { isAdmin } = useAuth()
+  const podeGerenciar = isAdmin || allowUserManagement
   const { rows, page, totalPages, loading, error, goToPage, reload } = usePaginatedList(service)
   const [modo, setModo] = useState<"capas" | "lista">(galeria ? "capas" : "lista")
   const [alvo, setAlvo] = useState<T | null>(null)
@@ -67,7 +70,7 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
     ),
   }
 
-  const colunas = isAdmin ? [...columns, colunaAcoes] : columns
+  const colunas = podeGerenciar ? [...columns, colunaAcoes] : columns
 
   return (
     <div className="pagina">
@@ -75,7 +78,7 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
         title={title}
         description={description}
         action={
-          isAdmin && (
+          podeGerenciar && (
             <Link to={newPath} className={classeBotao("principal", "grande")}>
               <Icone nome="mais" /> {newLabel}
             </Link>
@@ -83,7 +86,7 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
         }
       />
 
-      {!isAdmin && <p className="aviso">Você está só consultando. Para cadastrar, editar ou excluir, peça a um administrador.</p>}
+      {!podeGerenciar && <p className="aviso">Você está só consultando. Para cadastrar, editar ou excluir, peça a um administrador.</p>}
 
       {galeria && (
         <div className="alternador" role="group" aria-label="Forma de exibir">
@@ -116,6 +119,8 @@ export default function CrudList<T extends { id: number }, TInput>({ title, desc
           <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
         </div>
       )}
+
+      {extraContent}
 
       <ConfirmDialog
         open={alvo !== null}

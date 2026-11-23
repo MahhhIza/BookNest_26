@@ -10,9 +10,9 @@ const livros: Livro[] = [
 ]
 
 const leituras: Leitura[] = [
-  { id: 1, livroId: 1, status: "Lido", nota: 5, concluidaEm: "2026-01-10" },
-  { id: 2, livroId: 2, status: "Lido", nota: 3, concluidaEm: "2026-03-05" },
-  { id: 3, livroId: 3, status: "Lendo", nota: null, concluidaEm: null },
+  { id: 1, livroId: 1, openLibraryId: null, status: "Lido", nota: 5, concluidaEm: "2026-01-10" },
+  { id: 2, livroId: 2, openLibraryId: null, status: "Lido", nota: 3, concluidaEm: "2026-03-05" },
+  { id: 3, livroId: 3, openLibraryId: null, status: "Lendo", nota: null, concluidaEm: null },
 ]
 
 describe("estatísticas da biblioteca", () => {

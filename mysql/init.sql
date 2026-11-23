@@ -61,16 +61,38 @@ CREATE TABLE IF NOT EXISTS livros (
 CREATE TABLE IF NOT EXISTS leituras (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
-    livro_id INT NOT NULL,
+    livro_id INT NULL,
+    open_library_id VARCHAR(100) NULL,
     status ENUM('Quero ler', 'Lendo', 'Lido') NOT NULL,
     nota TINYINT NULL,
     concluida_em DATE NULL,
+
     INDEX idx_leituras_usuario_id (usuario_id),
+
     CONSTRAINT fk_leituras_usuario
-        FOREIGN KEY (usuario_id) REFERENCES users (id) ON DELETE RESTRICT,
+        FOREIGN KEY (usuario_id)
+        REFERENCES users (id)
+        ON DELETE CASCADE,
+
     CONSTRAINT fk_leituras_livro
-        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE RESTRICT,
+        FOREIGN KEY (livro_id)
+        REFERENCES livros (id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_leituras_minha_estante
+        FOREIGN KEY (usuario_id, open_library_id)
+        REFERENCES minha_estante (usuario_id, open_library_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT chk_leituras_origem
+        CHECK (
+            (livro_id IS NOT NULL AND open_library_id IS NULL)
+            OR
+            (livro_id IS NULL AND open_library_id IS NOT NULL)
+        ),
+
     CONSTRAINT chk_leituras_nota
         CHECK (nota IS NULL OR nota BETWEEN 1 AND 5)
-);
-
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
